@@ -2,6 +2,7 @@ import { Link } from "react-router"
 import Header from "./components/header"
 import "/src/tailwind.css"
 import SettingsStore from "./data/typeSettings"
+import { allDeals } from "./data/typeDeals"
 
 const salesPlanStats = [
   { label: "План:", val: "(План)" },
@@ -10,12 +11,17 @@ const salesPlanStats = [
   { label: "Выполнение плана:", val: "(Факт)" },
 ];
 
+const successful = (allDeals.filter(deal => deal.dealStatus === "successful")).length
+const failed = (allDeals.filter(deal => deal.dealStatus === "failed")).length
+const current = (allDeals.filter(deal => deal.dealStatus === "current")).length
+
 const dealsStats = [
-  { label: "План:", val: "(План)" },
-  { label: "Всего совершено сделок:", val: "(Факт)" },
-  { label: "Успешных сделок:", val: "(Факт)" },
-  { label: "Сорвавшихся сделок:", val: "(Факт)" },
-  { label: "Процентиль успешных сделок:", val: "(Факт)" },
+  { label: "План:", val: "10" },
+  { label: "Всего совершено сделок:", val: failed + successful },
+  { label: "Успешных сделок:", val: successful },
+  { label: "Сорвавшихся сделок:", val: failed },
+  { label: "Незавершенных сделок:", val: current },
+  { label: "Процентиль успешных сделок:", val: `${Math.round(successful/(successful + failed) * 100)}%` },
 ];
 
 export default function App() {
