@@ -3,30 +3,40 @@ import Header from "./components/header"
 import "/src/tailwind.css"
 import SettingsStore from "./data/typeSettings"
 import { allDeals } from "./data/typeDeals"
-
-const salesPlanStats = [
-  { label: "План:", val: "(План)" },
-  { label: "Выполнено:", val: "(Факт)" },
-  { label: "Осталось:", val: "(Факт)" },
-  { label: "Выполнение плана:", val: "(Факт)" },
-];
-
-const successful = (allDeals.filter(deal => deal.dealStatus === "successful")).length
-const failed = (allDeals.filter(deal => deal.dealStatus === "failed")).length
-const current = (allDeals.filter(deal => deal.dealStatus === "current")).length
-
-const dealsStats = [
-  { label: "План:", val: "10" },
-  { label: "Всего совершено сделок:", val: failed + successful },
-  { label: "Успешных сделок:", val: successful },
-  { label: "Сорвавшихся сделок:", val: failed },
-  { label: "Незавершенных сделок:", val: current },
-  { label: "Процентиль успешных сделок:", val: `${Math.round(successful/(successful + failed) * 100)}%` },
-];
+import StoreSales from "./data/typeSales"
+import StoreDeals from "./data/typeDeals"
 
 export default function App() {
   const { theme, setThemeToDark, setThemeToLight } = SettingsStore()
   const isLight = theme === "light"
+  const {calculateSum} = StoreDeals()
+
+  const successful = (allDeals.filter(deal => deal.dealStatus === "successful")).length
+  const failed = (allDeals.filter(deal => deal.dealStatus === "failed")).length
+  const current = (allDeals.filter(deal => deal.dealStatus === "current")).length
+
+  const notCurrent = allDeals.filter(deal => deal.dealStatus !== 'current')
+  const lastDeal = notCurrent[notCurrent.length - 1]
+  
+  const dealsStats = [
+    { label: "План:", val: "7" },
+    { label: "Всего совершено сделок:", val: failed + successful },
+    { label: "Успешных сделок:", val: successful },
+    { label: "Сорвавшихся сделок:", val: failed },
+    { label: "Незавершенных сделок:", val: current },
+    { label: "Процентиль успешных сделок:", val: `${Math.round(successful/(successful + failed) * 100)}%` },
+  ];
+
+  const {getTotalRevenue } = StoreSales()
+  
+  const plan = 800000
+  const progress = getTotalRevenue()
+  
+  const salesPlanStats = [
+    {label: "План", val: plan},
+    {label: "Факт", val: progress},
+    {label: "К-т выполнения плана", val: `${Math.round(progress/plan * 100)}%`}
+  ];
 
   const cardStyles = `flex flex-col px-8 mt-8 pt-2 pb-2 rounded-md border-2 m-auto transition-colors ${
     isLight 
@@ -40,7 +50,7 @@ export default function App() {
   const buttonStyles = `${textStyles} ${isLight ? "bg-[#499be7]" : "bg-[#3661e9]"} cursor-pointer rounded-md p-1`
 
   return (
-    <div className={`flex flex-col md:h-screen h-fit transition-colors ${isLight ? "bg-[#3f649bbe]" : "bg-[#0d1b31be]"}`}>
+    <div className={`flex flex-col h-fit transition-colors ${isLight ? "bg-[#3f649bbe]" : "bg-[#0d1b31be]"}`}>
       <Header />
 
       <div className={`flex justify-around pt-4 pb-4 border-b transition-colors ${isLight ? "border-[#aae8ec]" : "border-[#4837c2]"}`}>
@@ -56,17 +66,20 @@ export default function App() {
 
         <div className="flex flex-col md:w-1/2">
 
-          <div className={`${cardStyles} md:w-100 w-120`}>
-            <h2 className="self-start">План продаж</h2>
-            <div className={`pt-4 border-t ${borderStyles}`}>
-              {salesPlanStats.map(({ label, val }) => (
-                <div key={label} className={`${textStyles} flex justify-between`}>
-                  <h3>{label}</h3>
-                  <p>{val}</p>
+          <div className={`${cardStyles} w-120 pt-4 md:w-100`}>
+                <h2 className="self-start">Основная сводка</h2>
+
+                <div className={`${borderStyles} ${textStyles} border-t pt-2 pb-2`}>
+                    {
+                        salesPlanStats.map(({label, val}) => (
+                            <div key={val} className={`${textStyles} flex flex-row justify-between`}>
+                                <h3>{label}</h3>
+                                <p>{val}</p>
+                            </div>
+                        ))
+                    }
                 </div>
-              ))}
             </div>
-          </div>
 
           <div className={`${cardStyles} md:w-100 w-120`}>
             <h2 className="self-start">Сделки</h2>
@@ -81,9 +94,16 @@ export default function App() {
           </div>
 
           <div className={`${cardStyles} md:w-100 w-120`}>
-            <h2 className="self-start">Последняя совершенная сделка</h2>
-            <div className={`pt-4 border-t ${borderStyles}`}>
-              <p className={`${textStyles} pb-1`}>Пока нет совершенных сделок.</p>
+            <h2 className="self-start px-2">Базовые настройки</h2>
+            <div className="flex flex-col gap-1 mt-2">
+              <label className={`${textStyles} flex justify-between cursor-pointer`} htmlFor="theme-light">
+                Светлая тема 
+                <input type="radio" id="theme-light" onChange={setThemeToLight} checked={isLight}/>
+              </label>
+              <label className={`${textStyles} flex justify-between cursor-pointer`} htmlFor="theme-dark">
+                Темная тема 
+                <input type="radio" id="theme-dark" checked={theme === "dark"} onChange={setThemeToDark}/>
+              </label>
             </div>
           </div>
         </div>
@@ -109,17 +129,28 @@ export default function App() {
             </div>
           </div>
 
-          <div className={`${cardStyles} md:w-3/4 md:mr-24 w-120`}>
-            <h2 className="self-start px-2">Базовые настройки</h2>
-            <div className="flex flex-col gap-1 mt-2">
-              <label className={`${textStyles} flex justify-between cursor-pointer`} htmlFor="theme-light">
-                Светлая тема 
-                <input type="radio" id="theme-light" onChange={setThemeToLight} checked={isLight}/>
-              </label>
-              <label className={`${textStyles} flex justify-between cursor-pointer`} htmlFor="theme-dark">
-                Темная тема 
-                <input type="radio" id="theme-dark" checked={theme === "dark"} onChange={setThemeToDark}/>
-              </label>
+          <div className={`${cardStyles} md:w-3/4 md:mr-24 mb-2 w-120`}>
+            <h2 className="self-start">Последняя совершенная сделка</h2>
+            <div className={`pt-4 border-t ${borderStyles}`}>
+              {lastDeal 
+              ? <div className={`${textStyles}`}>
+                  <h3 className={`${borderStyles} flex flex-row justify-between`}>Статус: <p>{lastDeal.dealStatus === 'successful' ? "Успешная" : "Провальная"}</p></h3>
+                  <h3 className={`${borderStyles} flex flex-row justify-between`}>Заказчик: <p>{lastDeal.clientName}</p></h3>
+                  <h3 className={`${borderStyles} flex flex-row justify-between`}>Эл. почта заказчика: <p>{lastDeal.clientEmail}</p></h3>
+                  <h3 className={`${borderStyles} flex flex-row justify-between`}>Провел сделку: <p>{lastDeal.dealerName}</p></h3>
+                  <ul className={`${cardStyles} w-full flex flex-col`}>
+                    <p className={`${textStyles} self-start font-bold`}>Товары:</p>
+                    {lastDeal.clientBuys.map(good => (
+                      <li key={good.id} className={`${borderStyles} pt-2 pb-2 border-b flex flex-col`}>
+                        <p>{good.name}</p>
+                        <b>Цена(шт): {good.price}</b>
+                        <i>Кол-во: {good.quantity}</i>
+                      </li>
+                    ))}
+                    <p className="pt-2">Итоговая цена: {calculateSum(lastDeal)}руб.</p>
+                  </ul>
+                </div>
+              : <p className={`${textStyles} pb-1`}>Пока нет совершенных сделок.</p>}
             </div>
           </div>
 

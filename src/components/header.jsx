@@ -7,8 +7,6 @@ const navLinks = [
   { to: "/deals", label: "Сделки" },
   { to: "/sales", label: "Продажи" },
   { to: "/analytics", label: "Аналитика" },
-  { to: "/orders", label: "Заказы" },
-  { to: "/settings", label: "Настройки" },
 ];
 
 export default function Header() {
