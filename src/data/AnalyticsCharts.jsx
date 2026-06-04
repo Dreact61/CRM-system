@@ -12,7 +12,8 @@ import {
   } from "recharts";
   import SettingsStore from "../data/typeSettings";
 import StoreSales from "./typeSales";
-import employees from "./Employees";
+import employeesData from "./employees.json";
+const employees = employeesData.employees;
   
   const monthlyPlan = [
     { month: "Янв", "План по выручке": 1900000, "План по сделкам": 12 },

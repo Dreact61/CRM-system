@@ -1,7 +1,11 @@
-import { create } from "zustand";
-import { persist } from "zustand/middleware";
-import employees from "./Employees";
-import { goods, Good } from "./goods";
+import { create } from "zustand"
+import { persist } from "zustand/middleware"
+import employeesData from "./employees.json" with {type:"json"}
+import goodsData from "./goods.json" with {type:"json"}
+import { Good } from "./goods.ts"
+
+const goodsList = goodsData.goods
+const employeesList = employeesData.employees
 
 export type DealValues = {
     clientName: string,
@@ -20,10 +24,10 @@ export const allDeals: DealValues[] = [
       clientEmail: "zakaz@technoresh.ru",
       clientPhoneNumber: "+7 999 111-22-33",
       clientBuys: [
-        goods[3],
-        goods[8]
+        goodsList[3],
+        goodsList[8]
       ],
-      dealerName: `${employees[0].name}  ${employees[0].lastName}`,
+      dealerName: `${employeesList[0].name}  ${employeesList[0].lastName}`,
       dealStatus: "successful"
     },
     {
@@ -32,10 +36,10 @@ export const allDeals: DealValues[] = [
       clientEmail: "petrov.m@fakemail.ru",
       clientPhoneNumber: "+7 915 444-55-66",
       clientBuys: [
-        goods[2],
-        goods[5]
+        goodsList[2],
+        goodsList[5]
       ],
-      dealerName: `${employees[4].name}  ${employees[4].lastName}`,
+      dealerName: `${employeesList[4].name}  ${employeesList[4].lastName}`,
       dealStatus: "current"
     },
     {
@@ -44,9 +48,9 @@ export const allDeals: DealValues[] = [
       clientEmail: "sidorov_design@yandex.ru",
       clientPhoneNumber: "+7 903 777-88-99",
       clientBuys: [
-        goods[13]
+        goodsList[13]
       ],
-      dealerName: `${employees[7].name}  ${employees[7].lastName}`,
+      dealerName: `${employeesList[7].name}  ${employeesList[7].lastName}`,
       dealStatus: "failed"
     },
     {
@@ -55,10 +59,10 @@ export const allDeals: DealValues[] = [
       clientEmail: "hr@fakegamedevlab.io",
       clientPhoneNumber: "+7 999 555-44-33",
       clientBuys: [
-        goods[4],
-        goods[9]
+        goodsList[4],
+        goodsList[9]
       ],
-      dealerName: `${employees[0].name}  ${employees[0].lastName}`,
+      dealerName: `${employeesList[0].name}  ${employeesList[0].lastName}`,
       dealStatus: "current"
     },
     {
@@ -67,10 +71,10 @@ export const allDeals: DealValues[] = [
       clientEmail: "katerina.sm@fakemail.com",
       clientPhoneNumber: "+7 926 333-22-11",
       clientBuys: [
-        goods[7],
-        goods[11]
+        goodsList[7],
+        goodsList[11]
       ],
-      dealerName: `${employees[8].name}  ${employees[8].lastName}`,
+      dealerName: `${employeesList[8].name}  ${employeesList[8].lastName}`,
       dealStatus: "successful"
     },
     {
@@ -79,10 +83,10 @@ export const allDeals: DealValues[] = [
       clientEmail: "procurement@itcorp.ru",
       clientPhoneNumber: "+7 495 123-45-67",
       clientBuys: [
-        goods[6],
-        goods[16]
+        goodsList[6],
+        goodsList[16]
       ],
-      dealerName: `${employees[2].name}  ${employees[2].lastName}`,
+      dealerName: `${employeesList[2].name}  ${employeesList[2].lastName}`,
       dealStatus: "current"
     }
   ];

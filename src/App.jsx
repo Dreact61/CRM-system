@@ -5,13 +5,18 @@ import SettingsStore from "./data/typeSettings"
 import { allDeals } from "./data/typeDeals"
 import StoreSales from "./data/typeSales"
 import StoreDeals from "./data/typeDeals"
+import { useEffect } from "react"
 
-fetch()
+const API_URL = 'http://localhost:5000'
 
 export default function App() {
   const { theme, setThemeToDark, setThemeToLight } = SettingsStore()
   const isLight = theme === "light"
   const {calculateSum} = StoreDeals()
+
+  useEffect(() => {
+    fetch(`${API_URL}/deals`).then(res => res.json()).then(() => console.log('deals loaded'))
+  }, [])
 
   const successful = (allDeals.filter(deal => deal.dealStatus === "successful")).length
   const failed = (allDeals.filter(deal => deal.dealStatus === "failed")).length

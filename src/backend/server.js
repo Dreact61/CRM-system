@@ -1,15 +1,15 @@
 import http from 'http'
-import Router from './Router'
-import StoreDeals from '../data/typeDeals'
+import Router from './Router.js'
+import employees from "../data/employees.json" with {type : "json"}
 
 const router = new Router()
-const store = new StoreDeals()
+const employeesData = JSON.stringify(employees)
 
-const PORT = process.env.PORT || 5000
+const PORT = 5000
 
 router.request('GET', '/deals', (req, res) => {
     res.writeHead(200, {'Content-type':"application/json"})
-    res.end(store)
+    res.end(employeesData)
 })
 
 const server = http.createServer((req, res) => {
