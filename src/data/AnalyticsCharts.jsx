@@ -117,7 +117,7 @@ import employees from "./Employees";
         <div className={`${cardStyles} w-full`}>
             <h2 className={`${textStyles}`}>Полная аналитика</h2>
 
-            <div className={`${borderStyles} ${textStyles} flex flex-col border-t pt-2`}>
+            <div className={`${borderStyles} ${textStyles} px-8 md:px-16 flex flex-col border-t pt-2`}>
                 <h2 className="self-start">План за {monthlyPlan[monthlyPlan.length-1].month}</h2>
                 <div className={`${borderStyles} border-t border-b flex flex-col pt-2 pb-2`}>
                     <h3 className={`${textStyles} flex flex-row justify-between`}>Изначальный план: <p>{monthlyPlan[monthlyPlan.length - 1]["План по выручке"]}</p></h3>
@@ -131,7 +131,7 @@ import employees from "./Employees";
                 </div>
             </div>
 
-            <div className={`${borderStyles} ${textStyles} flex flex-col pt-2`}>
+            <div className={`${borderStyles} ${textStyles} px-8 md:px-16 flex flex-col pt-2`}>
                 <h2 className="self-start">Топ работников</h2>
                 <div className={`${borderStyles} border-t flex flex-col pt-2`}>
                     <h3 className={`${textStyles} flex flex-row justify-between`}>По кол-ву успешных сделок: <p>{employees[0].name} {employees[0].lastName}</p></h3>

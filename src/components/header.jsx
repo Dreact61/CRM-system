@@ -16,10 +16,10 @@ export default function Header() {
 
     return (
         <header 
-          className={`flex w-full mt-1 gap-2 justify-around pt-2 pb-4 border-b rounded-md md:justify-start md:gap-16 md:pl-4 ${
+          className={`z-900 top-0 sticky md:flex md:flex-row grid grid-cols-3 w-full gap-2 justify-around pt-2 pb-4 border-b rounded-md md:justify-start md:gap-16 md:pl-4 ${
             isLight 
               ? "bg-[#e2fff3]" 
-              : "bg-[#092030be] text-[#092030be]"
+              : "bg-[#092030] text-[#092030]"
           }`}
         >
             {navLinks.map(({ to, label }) => {

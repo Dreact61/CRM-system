@@ -6,6 +6,8 @@ import { allDeals } from "./data/typeDeals"
 import StoreSales from "./data/typeSales"
 import StoreDeals from "./data/typeDeals"
 
+fetch()
+
 export default function App() {
   const { theme, setThemeToDark, setThemeToLight } = SettingsStore()
   const isLight = theme === "light"
@@ -38,7 +40,7 @@ export default function App() {
     {label: "К-т выполнения плана", val: `${Math.round(progress/plan * 100)}%`}
   ];
 
-  const cardStyles = `flex flex-col px-8 mt-8 pt-2 pb-2 rounded-md border-2 m-auto transition-colors ${
+  const cardStyles = `flex flex-col px-8 md:px-16 mt-8 pt-2 pb-2 rounded-md border-2 m-auto transition-colors ${
     isLight 
       ? "bg-[#4c7dc7] border-[#88b7ff]" 
       : "bg-[#1f293d] border-[#374151]"
@@ -53,7 +55,7 @@ export default function App() {
     <div className={`flex flex-col h-fit transition-colors ${isLight ? "bg-[#3f649bbe]" : "bg-[#0d1b31be]"}`}>
       <Header />
 
-      <div className={`flex justify-around pt-4 pb-4 border-b transition-colors ${isLight ? "border-[#aae8ec]" : "border-[#4837c2]"}`}>
+      <div className={`flex w-full justify-around pt-4 pb-4 border-b transition-colors ${isLight ? "border-[#aae8ec]" : "border-[#4837c2]"}`}>
         <h2>Отчетность</h2>
         <Link to="/report">
           <button type="button" className={`${buttonStyles}`}>
@@ -66,7 +68,7 @@ export default function App() {
 
         <div className="flex flex-col md:w-1/2">
 
-          <div className={`${cardStyles} w-120 pt-4 md:w-100`}>
+          <div className={`${cardStyles} w-3/4 pt-4 md:w-4/5`}>
                 <h2 className="self-start">Основная сводка</h2>
 
                 <div className={`${borderStyles} ${textStyles} border-t pt-2 pb-2`}>
@@ -81,7 +83,7 @@ export default function App() {
                 </div>
             </div>
 
-          <div className={`${cardStyles} md:w-100 w-120`}>
+          <div className={`${cardStyles} md:4/5 w-3/4`}>
             <h2 className="self-start">Сделки</h2>
             <div className={`pt-4 border-t ${borderStyles}`}>
               {dealsStats.map(({ label, val }) => (
@@ -93,10 +95,10 @@ export default function App() {
             </div>
           </div>
 
-          <div className={`${cardStyles} md:w-100 w-120`}>
+          <div className={`${cardStyles} md:w-4/5 w-3/4`}>
             <h2 className="self-start px-2">Базовые настройки</h2>
             <div className="flex flex-col gap-1 mt-2">
-              <label className={`${textStyles} flex justify-between cursor-pointer`} htmlFor="theme-light">
+              <label className={`${textStyles} ${borderStyles} pt-4 border-t flex justify-between cursor-pointer`} htmlFor="theme-light">
                 Светлая тема 
                 <input type="radio" id="theme-light" onChange={setThemeToLight} checked={isLight}/>
               </label>
@@ -110,7 +112,7 @@ export default function App() {
 
         <div className="flex flex-col md:w-3/4">
           
-          <div className={`${cardStyles} md:w-3/4 md:mr-24 w-120`}>
+          <div className={`${cardStyles} md:w-4/5 w-3/4`}>
             <h2 className="self-start px-2">Последняя отчетность:</h2>
             
             <div className={`border-t border-b pb-4 pt-4 ${borderStyles}`}>
@@ -129,7 +131,7 @@ export default function App() {
             </div>
           </div>
 
-          <div className={`${cardStyles} md:w-3/4 md:mr-24 mb-2 w-120`}>
+          <div className={`${cardStyles} md:w-4/5 mb-2 w-3/4`}>
             <h2 className="self-start">Последняя совершенная сделка</h2>
             <div className={`pt-4 border-t ${borderStyles}`}>
               {lastDeal 
