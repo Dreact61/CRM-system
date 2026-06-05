@@ -1,0 +1,142 @@
+{
+    "deals": [
+      {
+        "dealId": 101,
+        "clientName": "ООО 'ТехноРешения'",
+        "clientEmail": "zakaz@technoresh.ru",
+        "clientPhoneNumber": "+7 999 111-22-33",
+        "clientBuys": [
+          {
+            "id": 4,
+            "name": "Наушники с шумоподавлением",
+            "desc": "Полноразмерные Bluetooth-наушники с активным шумоподавлением (ANC).",
+            "price": 12500,
+            "quantity": 28
+          },
+          {
+            "id": 9,
+            "name": "Игровое кресло",
+            "desc": "Ортопедическое кресло с регулировкой подлокотников и наклоном спинки.",
+            "price": 18990,
+            "quantity": 8
+          }
+        ],
+        "dealerName": "Иван Иванов",
+        "dealStatus": "successful"
+      },
+      {
+        "dealId": 102,
+        "clientName": "Михаил Петров",
+        "clientEmail": "petrov.m@fakemail.ru",
+        "clientPhoneNumber": "+7 915 444-55-66",
+        "clientBuys": [
+          {
+            "id": 3,
+            "name": "Монитор 27\" IPS 144Hz",
+            "desc": "Игровой монитор с разрешением Quad HD и минимальным временем отклика.",
+            "price": 24990,
+            "quantity": 12
+          },
+          {
+            "id": 6,
+            "name": "Внешний SSD 1ТБ",
+            "desc": "Портативный твердотельный накопитель с высокой скоростью чтения по USB-C.",
+            "price": 8990,
+            "quantity": 35
+          }
+        ],
+        "dealerName": "Алексей Васильев",
+        "dealStatus": "current"
+      },
+      {
+        "dealId": 103,
+        "clientName": "ИП Сидоров А.В.",
+        "clientEmail": "sidorov_design@yandex.ru",
+        "clientPhoneNumber": "+7 903 777-88-99",
+        "clientBuys": [
+          {
+            "id": 14,
+            "name": "Светодиодная лента умного дома",
+            "desc": "Адресная RGB-лента с управлением через приложение и голосовых ассистентов.",
+            "price": 2100,
+            "quantity": 65
+          }
+        ],
+        "dealerName": "Ольга Михайлова",
+        "dealStatus": "failed"
+      },
+      {
+        "dealId": 104,
+        "clientName": "Стартап 'ГеймДев Лаб'",
+        "clientEmail": "hr@fakegamedevlab.io",
+        "clientPhoneNumber": "+7 999 555-44-33",
+        "clientBuys": [
+          {
+            "id": 5,
+            "name": "Коврик для мыши XL",
+            "desc": "Большой игровой коврик с прошитыми краями и влагозащитным покрытием.",
+            "price": 1490,
+            "quantity": 80
+          },
+          {
+            "id": 10,
+            "name": "Кронштейн для монитора",
+            "desc": "Настольный газлифт-кронштейн для экранов весом до 9 кг.",
+            "price": 4100,
+            "quantity": 22
+          }
+        ],
+        "dealerName": "Иван Иванов",
+        "dealStatus": "current"
+      },
+      {
+        "dealId": 105,
+        "clientName": "Екатерина Смирнова",
+        "clientEmail": "katerina.sm@fakemail.com",
+        "clientPhoneNumber": "+7 926 333-22-11",
+        "clientBuys": [
+          {
+            "id": 8,
+            "name": "USB-C Хаб 6-в-1",
+            "desc": "Многофункциональный адаптер с HDMI, картридером и портами USB 3.0.",
+            "price": 3200,
+            "quantity": 50
+          },
+          {
+            "id": 12,
+            "name": "Рюкзак для ноутбука",
+            "desc": "Влагостойкий городской рюкзак с отделением для ноутбука 16 дюймов.",
+            "price": 4800,
+            "quantity": 40
+          }
+        ],
+        "dealerName": "Александр Федоров",
+        "dealStatus": "successful"
+      },
+      {
+        "dealId": 106,
+        "clientName": "АО 'АйТи Корп'",
+        "clientEmail": "procurement@itcorp.ru",
+        "clientPhoneNumber": "+7 495 123-45-67",
+        "clientBuys": [
+          {
+            "id": 7,
+            "name": "Веб-камера 4K",
+            "desc": "Камера для стримов и видеоконференций с автофокусом и встроенным микрофоном.",
+            "price": 7400,
+            "quantity": 15
+          },
+          {
+            "id": 17,
+            "name": "Кулер для процессора",
+            "desc": "Башенный кулер с четырьмя тепловыми трубками и тихим 120-мм вентилятором.",
+            "price": 3400,
+            "quantity": 33
+          }
+        ],
+        "dealerName": "Дмитрий Кузнецов",
+        "dealStatus": "current"
+      }
+    ]
+  }
+  

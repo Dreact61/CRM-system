@@ -11,7 +11,6 @@ import {
     Legend 
   } from "recharts";
   import SettingsStore from "../data/typeSettings";
-import StoreSales from "./typeSales";
 import employeesData from "./employees.json";
 const employees = employeesData.employees;
   
@@ -50,7 +49,6 @@ const employees = employeesData.employees;
   });
   
   export default function AnalyticsChart() {
-    const {getTotalRevenue} = StoreSales()
 
     const { theme } = SettingsStore();
     const isLight = theme === "light";

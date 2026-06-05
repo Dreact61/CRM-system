@@ -5,19 +5,43 @@ import SettingsStore from "./data/typeSettings"
 import { allDeals } from "./data/typeDeals"
 import StoreSales from "./data/typeSales"
 import StoreDeals from "./data/typeDeals"
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 
-const API_URL = 'http://localhost:5000'
+const API_URL = `http://localhost:5000/deals`
 
 export default function App() {
   const { theme, setThemeToDark, setThemeToLight } = SettingsStore()
   const isLight = theme === "light"
   const {calculateSum} = StoreDeals()
 
+  const [loading, setLoading] = useState(true)
+  const [data, setData] = useState(null)
+  const [error, setError] = useState(null)
+
   useEffect(() => {
-    fetch(`${API_URL}/deals`).then(res => res.json()).then(() => console.log('deals loaded'))
+    const fetchData = async () => {
+      try {
+        setLoading(true)
+
+        const res = await fetch(`${API_URL}`)
+
+        if (!res.ok) throw new Error(`${res.status}`)
+
+        const data = await res.json()
+        setData(data)
+      } catch(e) {
+        console.error(e)
+        setError(e)
+        return null
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchData()
   }, [])
 
+  
   const successful = (allDeals.filter(deal => deal.dealStatus === "successful")).length
   const failed = (allDeals.filter(deal => deal.dealStatus === "failed")).length
   const current = (allDeals.filter(deal => deal.dealStatus === "current")).length
@@ -34,7 +58,7 @@ export default function App() {
     { label: "Процентиль успешных сделок:", val: `${Math.round(successful/(successful + failed) * 100)}%` },
   ];
 
-  const {getTotalRevenue } = StoreSales()
+  const {getTotalRevenue} = StoreSales()
   
   const plan = 800000
   const progress = getTotalRevenue()
@@ -56,6 +80,8 @@ export default function App() {
   
   const buttonStyles = `${textStyles} ${isLight ? "bg-[#499be7]" : "bg-[#3661e9]"} cursor-pointer rounded-md p-1`
 
+  if (loading) return <div>Loading...</div>
+  if (error) return <h1 className="text-[#ad260e]">Error {error.message}</h1>
   return (
     <div className={`flex flex-col h-fit transition-colors ${isLight ? "bg-[#3f649bbe]" : "bg-[#0d1b31be]"}`}>
       <Header />

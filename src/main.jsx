@@ -6,12 +6,15 @@ import App from './App.jsx'
 import Sales from './components/sales.jsx'
 import Deals from './components/deals.jsx'
 import Analytics from './components/analytics.jsx'
+import Report from './components/report.jsx'
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <BrowserRouter>
       <Routes>
         <Route path='/' element={<App />}></Route>
+
+        <Route path='/report' element={<Report/>}></Route>
 
         <Route path='/deals' element={<Deals />}></Route>
 

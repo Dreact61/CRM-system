@@ -2,16 +2,13 @@ import Header from "./header"
 import SettingsStore from "../data/typeSettings"
 import StoreSales from "../data/typeSales"
 import { useEffect } from "react"
-import StoreDeals from "../data/typeDeals"
 
 export default function Sales() {
-    const {deals} = StoreDeals()
-
     const {values, getTotalRevenue, initializeSales} = StoreSales()
 
     useEffect(() => {
         initializeSales()
-    }, [])
+    })
 
     const { theme } = SettingsStore()
     const isLight = theme === "light"
@@ -33,8 +30,6 @@ export default function Sales() {
   
     const textStyles = isLight ? "text-[#f4ffff]" : "text-[#d1d5db]";
     const borderStyles = isLight ? "border-[#f4ffff]" : "border-[#374151]";
-    
-    const buttonStyles = `${textStyles} ${isLight ? "bg-[#499be7]" : "bg-[#3661e9]"} cursor-pointer rounded-md p-1`
 
     return (
         <div className={`flex flex-col h-fit transition-colors ${isLight ? "bg-[#3f649bbe]" : "bg-[#0d1b31be]"}`}>

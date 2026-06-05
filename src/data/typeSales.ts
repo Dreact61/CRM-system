@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import { Good } from "./goods.ts";
+import { Good } from "./types.ts";
 import { allDeals } from "./typeDeals";
 
 export type salesValues = {
