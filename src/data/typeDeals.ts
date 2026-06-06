@@ -7,6 +7,7 @@ export const allDeals = deals.deals
 
 export type StoreType = {
     allDeals: Deal[],
+    plan: number,
     initDeals: (deals: Deal[]) => void,
     calculateSum: (deal: Deal) => number
 } 
@@ -15,6 +16,7 @@ const StoreDeals = create<StoreType>()(
     persist(
         (set) => ({
             allDeals: [],
+            plan: 7,
 
             initDeals: (incomingDeals) => set({allDeals: incomingDeals}),
 

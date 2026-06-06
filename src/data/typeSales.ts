@@ -2,6 +2,7 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { Good } from "./types.ts";
 import { allDeals } from "./typeDeals";
+import goods from "../data/goods.json" with {type: "json"}
 
 export type salesValues = {
     name: string,
@@ -16,6 +17,7 @@ export type salesValues = {
 
 export type salesStore = {
     values: salesValues[],
+    currencyPlan: number,
     initializeSales: () => void,
     getTotalRevenue: () => number
 }
@@ -53,6 +55,8 @@ const StoreSales = create<salesStore>()(
     persist(
         (set, get) => ({
                 values: getSalesFromDeals(),
+
+                currencyPlan: 800000,
 
                 initializeSales: () => {
                     set({values: getSalesFromDeals()})

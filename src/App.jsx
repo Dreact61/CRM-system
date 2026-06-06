@@ -5,6 +5,7 @@ import SettingsStore from "./data/typeSettings"
 import { allDeals } from "./data/typeDeals"
 import StoreSales from "./data/typeSales"
 import StoreDeals from "./data/typeDeals"
+import reportStore from "./data/typeReports"
 import { useEffect, useState } from "react"
 
 const API_URL = `http://localhost:5000/deals`
@@ -12,7 +13,9 @@ const API_URL = `http://localhost:5000/deals`
 export default function App() {
   const { theme, setThemeToDark, setThemeToLight } = SettingsStore()
   const isLight = theme === "light"
-  const {calculateSum} = StoreDeals()
+  
+  const {calculateSum, initDeals, plan} = StoreDeals()
+  const {lastReport, allReports} = reportStore()
 
   const [loading, setLoading] = useState(true)
   const [data, setData] = useState(null)
@@ -27,8 +30,12 @@ export default function App() {
 
         if (!res.ok) throw new Error(`${res.status}`)
 
-        const data = await res.json()
-        setData(data)
+        const rawData = await res.json()
+
+        const dealsData = JSON.parse(rawData.deals)
+        initDeals(dealsData)
+
+        setData(rawData)
       } catch(e) {
         console.error(e)
         setError(e)
@@ -40,7 +47,8 @@ export default function App() {
 
     fetchData()
   }, [])
-
+  
+  console.log(data)
   
   const successful = (allDeals.filter(deal => deal.dealStatus === "successful")).length
   const failed = (allDeals.filter(deal => deal.dealStatus === "failed")).length
@@ -50,23 +58,22 @@ export default function App() {
   const lastDeal = notCurrent[notCurrent.length - 1]
   
   const dealsStats = [
-    { label: "План:", val: "7" },
+    { label: "План:", val: plan },
     { label: "Всего совершено сделок:", val: failed + successful },
     { label: "Успешных сделок:", val: successful },
     { label: "Сорвавшихся сделок:", val: failed },
     { label: "Незавершенных сделок:", val: current },
-    { label: "Процентиль успешных сделок:", val: `${Math.round(successful/(successful + failed) * 100)}%` },
+    { label: "Процентиль успешных сделок:", val: notCurrent.length !== 0 ? `${Math.round(successful/(successful + failed) * 100)}%` : "0"},
   ];
 
-  const {getTotalRevenue} = StoreSales()
+  const {getTotalRevenue, currencyPlan} = StoreSales()
   
-  const plan = 800000
   const progress = getTotalRevenue()
   
   const salesPlanStats = [
-    {label: "План", val: plan},
+    {label: "План", val: currencyPlan},
     {label: "Факт", val: progress},
-    {label: "К-т выполнения плана", val: `${Math.round(progress/plan * 100)}%`}
+    {label: "К-т выполнения плана", val: `${Math.round(progress/currencyPlan * 100)}%`}
   ];
 
   const cardStyles = `flex flex-col px-8 md:px-16 mt-8 pt-2 pb-2 rounded-md border-2 m-auto transition-colors ${
@@ -80,7 +87,7 @@ export default function App() {
   
   const buttonStyles = `${textStyles} ${isLight ? "bg-[#499be7]" : "bg-[#3661e9]"} cursor-pointer rounded-md p-1`
 
-  if (loading) return <div>Loading...</div>
+  if (loading) return <h1>Loading...</h1>
   if (error) return <h1 className="text-[#ad260e]">Error {error.message}</h1>
   return (
     <div className={`flex flex-col h-fit transition-colors ${isLight ? "bg-[#3f649bbe]" : "bg-[#0d1b31be]"}`}>
@@ -147,8 +154,8 @@ export default function App() {
             <h2 className="self-start px-2">Последняя отчетность:</h2>
             
             <div className={`border-t border-b pb-4 pt-4 ${borderStyles}`}>
-              <h3 className={`${textStyles} flex justify-between`}>Дата сдачи: <p>(Дата)</p></h3>
-              <h3 className={`${textStyles} flex justify-between`}>Временной промежуток: <p>(Дата) - (Дата)</p></h3>
+              <h3 className={`${textStyles} flex justify-between`}>Дата сдачи: <p>{allReports ? lastReport.wasWritten : "(Дата)"}</p></h3>
+              <h3 className={`${textStyles} flex justify-between`}>Дата истечения: <p>(Дата)</p></h3>
             </div>
 
             <div className={`flex flex-col pt-2 md:pt-4 pb-4 md:pb-8 border-b ${borderStyles}`}>

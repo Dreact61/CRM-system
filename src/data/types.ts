@@ -15,3 +15,11 @@ export type Deal = {
     dealerName: string,
     dealStatus: "successful" | "current" | "failed" 
 }
+
+export type Report = {
+    from: string,
+    to: string,
+    report: string,
+    wasWritten: string,
+    expiresAt: string
+}
