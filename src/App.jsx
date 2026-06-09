@@ -1,69 +1,41 @@
 import { Link } from "react-router"
 import Header from "./components/header"
 import "/src/tailwind.css"
-import SettingsStore from "./data/typeSettings"
-import { allDeals } from "./data/typeDeals"
-import StoreSales from "./data/typeSales"
 import StoreDeals from "./data/typeDeals"
+import StoreSales from "./data/typeSales"
+import SettingsStore from "./data/typeSettings"
 import reportStore from "./data/typeReports"
-import { useEffect, useState } from "react"
-
-const API_URL = `http://localhost:5000/deals`
+import { useEffect } from "react"
+import { all } from "axios"
 
 export default function App() {
   const { theme, setThemeToDark, setThemeToLight } = SettingsStore()
   const isLight = theme === "light"
   
-  const {calculateSum, initDeals, plan} = StoreDeals()
+  const {calculateSum, initDeals, allDeals, plan} = StoreDeals()
+
   const {lastReport, allReports} = reportStore()
 
-  const [loading, setLoading] = useState(true)
-  const [data, setData] = useState(null)
-  const [error, setError] = useState(null)
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setLoading(true)
+    initDeals()
+  },[])
 
-        const res = await fetch(`${API_URL}`)
+  console.log(Array.isArray(allDeals))
 
-        if (!res.ok) throw new Error(`${res.status}`)
+  const completed = allDeals.filter(deal => deal.dealStatus !== 'current')
+  const current = allDeals.filter(deal => deal.dealStatus === 'current')
+  const successful = allDeals.filter(deal => deal.dealStatus === 'successful')
+  const failed = allDeals.filter(deal => deal.dealStatus === 'failed')
+  const lastDeal = completed[completed.length - 1]
 
-        const rawData = await res.json()
-
-        const dealsData = JSON.parse(rawData.deals)
-        initDeals(dealsData)
-
-        setData(rawData)
-      } catch(e) {
-        console.error(e)
-        setError(e)
-        return null
-      } finally {
-        setLoading(false)
-      }
-    }
-
-    fetchData()
-  }, [])
-  
-  console.log(data)
-  
-  const successful = (allDeals.filter(deal => deal.dealStatus === "successful")).length
-  const failed = (allDeals.filter(deal => deal.dealStatus === "failed")).length
-  const current = (allDeals.filter(deal => deal.dealStatus === "current")).length
-
-  const notCurrent = allDeals.filter(deal => deal.dealStatus !== 'current')
-  const lastDeal = notCurrent[notCurrent.length - 1]
-  
   const dealsStats = [
     { label: "План:", val: plan },
     { label: "Всего совершено сделок:", val: failed + successful },
     { label: "Успешных сделок:", val: successful },
     { label: "Сорвавшихся сделок:", val: failed },
     { label: "Незавершенных сделок:", val: current },
-    { label: "Процентиль успешных сделок:", val: notCurrent.length !== 0 ? `${Math.round(successful/(successful + failed) * 100)}%` : "0"},
+    { label: "Процентиль успешных сделок:", val: completed.length !== 0 ? `${Math.round(successful/(successful + failed) * 100)}%` : "0"},
   ];
 
   const {getTotalRevenue, currencyPlan} = StoreSales()
@@ -87,10 +59,8 @@ export default function App() {
   
   const buttonStyles = `${textStyles} ${isLight ? "bg-[#499be7]" : "bg-[#3661e9]"} cursor-pointer rounded-md p-1`
 
-  if (loading) return <h1>Loading...</h1>
-  if (error) return <h1 className="text-[#ad260e]">Error {error.message}</h1>
   return (
-    <div className={`flex flex-col h-fit transition-colors ${isLight ? "bg-[#3f649bbe]" : "bg-[#0d1b31be]"}`}>
+    <div className={`text-[10px] md:text-[14px] flex flex-col h-fit transition-colors ${isLight ? "bg-[#3f649bbe]" : "bg-[#0d1b31be]"}`}>
       <Header />
 
       <div className={`flex w-full justify-around pt-4 pb-4 border-b transition-colors ${isLight ? "border-[#aae8ec]" : "border-[#4837c2]"}`}>

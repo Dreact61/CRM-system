@@ -1,29 +1,13 @@
 import { Report } from "./types";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
+import axios from "axios";
 
-const API_URL = `http://localhost:5000/reports`
-
-const fetchReports = async () => {
-    try {
-        const res = await fetch(`${API_URL}`)
-
-        if (!res.ok) throw new Error('Error while fetching reports.')
-
-        const rawData = await res.json()
-        const parsed = JSON.parse(rawData)
-
-        if(parsed.length === 0) return null
-        return parsed
-    } catch(err) {
-        console.error(err)
-        return null
-    }
-}
+const API_URL = `http://localhost:5000/report`
 
 type Store = {
-    allReports: Report[] | null,
-    lastReport: Report[] | null,
+    allReports: Report[],
+    lastReport: Report | {},
     error: string | null,
     loading: boolean
     initReport: () => Promise<void>
@@ -34,28 +18,22 @@ const reportStore = create<Store>()(
     persist(
         set => ({
             allReports: [],
-            lastReport: [],
+            lastReport: {},
             loading: false,
             error: null,
 
             initReport: async () => {
-                set({loading: true, error: null})
-                try {
-                    const res = await fetch(`${API_URL}`)
-            
-                    if (!res.ok) throw new Error('Error while fetching reports.')
-            
-                    const rawData = await res.json()
-                    const parsed = JSON.parse(rawData.reports)
-            
-                    if(parsed.length === 0) return null
-                    set({
-                        allReports: parsed,
-                        lastReport: parsed[parsed.length - 1],
-                        loading: false
-                    })
-                } catch(err:any) {
-                    console.error(err)
+                try{
+                   set({loading: true, error: null})
+
+                   const res = await axios.get<Report[]>(API_URL)
+                   set({
+                    loading: false,
+                    allReports: res.data,
+                    lastReport: res.data[res.data.length - 1]
+                })
+                } catch(err: any) {
+                    console.error(`Error: ${err.message}`)
                     set({error: err.message, loading: false})
                 }
             },

@@ -1,47 +1,28 @@
-import http from 'http'
-import employees from "../data/employees.json" with {type : "json"}
-import goods from "../data/goods.json" with {type : "json"}
-import deals from '../data/deals.json' with {type : "json"}
-import report from "../data/reports.json" with {type: "json"}
-import process from 'process'
+import dealsData from '../data/deals.json' with {type: "json"}
+import employeesData from '../data/employees.json' with {type: "json"}
+import goodsData from '../data/goods.json' with {type: "json"}
 
-const pid = process.pid
+import express from 'express'
+import cors from 'cors'
+import {saveToFile} from './services'
 
-const employeesData = JSON.stringify(employees)
-const goodsData = JSON.stringify(goods)
-const dealsData = JSON.stringify(deals)
-const reportData = JSON.stringify(report)
+import dealsRouter from './Routes/dealsRoute.route'
+import employeesRouter from './Routes/employeesRoute.route'
+import goodsRouter from './Routes/goodsRoute.route'
+import reportsRouter from './Routes/reportsRoute.route'
 
-export const PORT = 5000
+const app = express()
+app.use(cors())
+app.use(express.json())
 
-const server = http.createServer((req, res) => {
-    res.setHeader('Access-Control-Allow-Origin', 'http://localhost:5173')
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization')
+app.use('/api/deals', dealsRouter)
+app.use('/api/employees', employeesRouter)
+app.use('/api/goods', goodsRouter)
+app.use('/api/reports', reportsRouter)
 
-    try{
-        if (req.method === 'OPTIONS') {
-            res.writeHead(204)
-            res.end()
-            return 
-        }
-        
-        if (req.method === 'GET') {
-            res.writeHead(200, {'Content-Type':'application/json'})
-            const combinedData = {
-                employees: employeesData,
-                goods: goodsData,
-                deals: dealsData,
-                reports: reportData
-            }
-            res.end(JSON.stringify(combinedData))
-        }
-    } catch(err) {
-        console.error(err)
-        res.writeHead(err.message)
-        res.end(`Error: ${err}`)
-    }
+app.use((err, req, res, next) => {
+    console.error(err.stack)
+    res.status(500).json("Внутренняя ошибка сервера")
 })
 
-
-server.listen(PORT, () => console.log(`SERVER OK ON PORT ${PORT} (id:${pid})`))
+app.listen(5000, () => console.log("Сервер запущен на порту 5000"))

@@ -41,7 +41,7 @@ export default function Report() {
     )
     
     return (
-        <div  className={`flex flex-col min-h-screen items-center h-fit transition-colors ${isLight ? "bg-[#3f649bbe]" : "bg-[#0d1b31be]"}`}>
+        <div  className={`text-[10px] md:text-[14px] flex flex-col min-h-screen items-center h-fit transition-colors ${isLight ? "bg-[#3f649bbe]" : "bg-[#0d1b31be]"}`}>
             <Header />
 
             <div className={`w-screen h-[80vh] md:pt-20 pt-4 flex mb-2 items-center md:justify-center`}>

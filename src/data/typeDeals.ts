@@ -1,15 +1,17 @@
 import { create } from "zustand"
 import { persist } from "zustand/middleware"
-import deals from "../data/deals.json" with {type: "json"}
+import axios from "axios"
 import { Deal } from "./types.ts"
 
-export const allDeals = deals.deals
+const API_URL = `http://localhost:5000/deals`
 
 export type StoreType = {
     allDeals: Deal[],
     plan: number,
-    initDeals: (deals: Deal[]) => void,
-    calculateSum: (deal: Deal) => number
+    loading: boolean,
+    error: string | null
+    initDeals: () => Promise<void>,
+    calculateSum: (deal: Deal) => number,
 } 
 
 const StoreDeals = create<StoreType>()(
@@ -17,8 +19,20 @@ const StoreDeals = create<StoreType>()(
         (set) => ({
             allDeals: [],
             plan: 7,
+            loading: false,
+            error: null,
 
-            initDeals: (incomingDeals) => set({allDeals: incomingDeals}),
+            initDeals: async () => {
+                try {
+                    set({loading: true, error: null})
+
+                    const res = await axios.get<Deal[]>(`${API_URL}`)
+                    set({allDeals: res.data, loading: false})
+                } catch(err:any) {
+                   console.error(`Error: ${err.message}`)
+                   set({error: err.message, loading: false})
+                }
+            },
 
             calculateSum: (deal) => {
               if (!deal || !deal.clientBuys || !Array.isArray(deal.clientBuys)) return 0
@@ -28,7 +42,7 @@ const StoreDeals = create<StoreType>()(
                 }, 0)
             }
         }),
-        {name: "all-deals"}
+        {name: "all-deals", partialize: (state) => ({calculateSum: state.calculateSum, allDeals: state.allDeals})}
     )
 )
 
