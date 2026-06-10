@@ -1,17 +1,61 @@
 import express from 'express'
+import { saveToFile } from '../services.js'
+import fs from 'fs'
+import path from 'path'
+import { fileURLToPath } from 'url'
+
+const __fileName = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__fileName)
+const pathToJSON = path.join(__dirname,  '..', '..', 'data', 'employees.json')
+
+let db
+try {
+    const fileData = fs.readFile(pathToJSON, 'utf-8', (err) => {
+        console.error(err)
+    })
+
+    const valid = fileData ? fileData : '[]'
+    db = JSON.parse(valid)
+} catch(err) {
+    console.error('Error: ', err.message);
+    db = []
+}
 
 const employeesRouter = express.Router()
 
 employeesRouter.get('/', (req, res) => {
-    res.json(`Данные о сотрудниках запрошены`)
+    res.json(db.employees || db)
 })
 
-employeesRouter.post('/', (req, res) => {
-    res.json(`Добавлен новый сотрудник в баз данных`)
+employeesRouter.post('/', async (req, res, next) => {
+    try {
+        const body = req.body
+    
+        if (!body || Object.keys(body).length === 0) return res.status(400).json('ОШИБКА: тело запроса пустое!')
+        
+        if (db.employees) {
+            db.employees.push(body)
+        } else {
+            db.push(body)
+        }
+    
+        await saveToFile('employeees', db)
+    
+        res.status(201).json(body)
+    } catch(err) {
+        next(err)
+    }
 })
 
-employeesRouter.get('/', (req, res) => {
-    res.json(`Запрошены данные о сотруднике ${req.params.name} ${req.params.lastName}`)
+employeesRouter.get('/:name', (req, res) => {
+    const name = req.params.name
+    const employeesList = db.employees || db
+
+    const foundEmployee = employeesList.find(e => e.name === name)
+
+    if (!foundEmployee) return res.status(404).json('ОШИБКА: сотрудника с таким именем нет в базе')
+    
+    res.json(foundEmployee)
 })
 
 export default employeesRouter

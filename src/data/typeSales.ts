@@ -3,7 +3,8 @@ import { persist } from "zustand/middleware";
 import { Deal, Good } from "./types.ts";
 import axios from "axios";
 
-const DEALS = `http://localhost:5000/deals`
+const DEALS = `http://localhost:5000/api/deals`
+const GOODS = `http://localhost:5000/api/goods`
 
 export type salesValues = {
     name: string,
@@ -19,19 +20,21 @@ export type salesValues = {
 export type salesStore = {
     values: salesValues[],
     allDeals: Deal[],
+    allGoods: Good[],
     currencyPlan: number,
     error: string | null,
     loading: boolean,
-    initDeals: () => Promise<void>
+    initDeals: () => Promise<void>,
+    initGoods: () => Promise<void>,
     initializeSales: () => salesValues[],
     getTotalRevenue: () => number
 }
  
 const StoreSales = create<salesStore>()(
-    persist(
         (set, get) => ({
                 values: [],
                 allDeals: [],
+                allGoods: [],
                 currencyPlan: 800000,
                 error: null,
                 loading: false,
@@ -42,6 +45,18 @@ const StoreSales = create<salesStore>()(
 
                         const deals = await axios.get<Deal[]>(`${DEALS}`)
                         set({allDeals: deals.data, loading: false})
+                    } catch (err: any) {
+                        console.error(`Error: ${err.message}`)
+                        set({error: err.message, loading: false})
+                    }
+                },
+
+                initGoods: async() => {
+                    try {
+                        set({loading: true, error: null})
+
+                        const goods = await axios.get<Good[]>(`${GOODS}`)
+                        set({allGoods: goods.data, loading: false})
                     } catch (err: any) {
                         console.error(`Error: ${err.message}`)
                         set({error: err.message, loading: false})
@@ -83,9 +98,7 @@ const StoreSales = create<salesStore>()(
                     return values.reduce((sum, item) => sum + item.sum, 0)
                 },
             }
-        ),
-        {name: "all-sales", partialize: (state) => ({values: state.values, getTotalRevenue: state.getTotalRevenue})}
-    )
+        )
 )
 
 export default StoreSales

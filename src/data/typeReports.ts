@@ -3,51 +3,66 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import axios from "axios";
 
-const API_URL = `http://localhost:5000/report`
+const REPORTS = `http://localhost:5000/api/reports`
 
 type Store = {
     allReports: Report[],
     lastReport: Report | {},
     error: string | null,
     loading: boolean
-    initReport: () => Promise<void>
-    addReport: (newReport: Report) => void
+    initReport: () => Promise<void>,
+    addReport: (newReport: Omit<Report, 'wasWritten'> | Report) => Promise<void>
 }
 
 const reportStore = create<Store>()(
-    persist(
-        set => ({
+        (set, get) => ({
             allReports: [],
-            lastReport: {},
+            lastReport: [],
             loading: false,
             error: null,
 
             initReport: async () => {
-                try{
-                   set({loading: true, error: null})
+                try {
+                    set({ loading: true, error: null })
+                    const res = await axios.get(REPORTS)
 
-                   const res = await axios.get<Report[]>(API_URL)
-                   set({
-                    loading: false,
-                    allReports: res.data,
-                    lastReport: res.data[res.data.length - 1]
-                })
-                } catch(err: any) {
-                    console.error(`Error: ${err.message}`)
-                    set({error: err.message, loading: false})
+                    const safeData = (res && res.data && Array.isArray(res.data)) ? res.data : []
+            
+                    set({
+                        loading: false,
+                        allReports: safeData,
+                        lastReport: safeData.length > 0 ? safeData[safeData.length - 1] : null
+                    })
+                } catch (err: any) {
+                    console.error(`Ошибка при загрузке: ${err.message}`)
+                    set({ 
+                        error: err.message, 
+                        loading: false, 
+                        allReports: [], 
+                        lastReport: {} 
+                    })
                 }
             },
+            
 
-            addReport: (newReport) => set((state) => {
-                const update = [...state.allReports, newReport]
-                return {
-                    allReports: update,
-                    lastReport: newReport
+            addReport: async (newReport) => {
+                try {
+                    set({loading: false, error: null})
+                    const res = await axios.post(REPORTS, newReport)
+                    const createdRep = res.data
+                    const currentReps = get().allReports
+    
+                    set({
+                        loading: false,
+                        allReports: [...currentReps, createdRep],
+                        lastReport: createdRep
+                    })
+                } catch(err:any) {
+                    console.error('Error: ', err.message);
+                    set({error: err.message, loading:false})
                 }
-            })
-        }),
-        {name: 'reports', partialize: (state:Store) => ({allReports: state.allReports})}
-    )
+            }
+        })
 )
 
 export default reportStore

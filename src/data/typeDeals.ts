@@ -3,7 +3,7 @@ import { persist } from "zustand/middleware"
 import axios from "axios"
 import { Deal } from "./types.ts"
 
-const API_URL = `http://localhost:5000/deals`
+const API_URL = `http://localhost:5000/api/deals`
 
 export type StoreType = {
     allDeals: Deal[],
@@ -15,7 +15,6 @@ export type StoreType = {
 } 
 
 const StoreDeals = create<StoreType>()(
-    persist(
         (set) => ({
             allDeals: [],
             plan: 7,
@@ -41,9 +40,7 @@ const StoreDeals = create<StoreType>()(
                     return sum + (item.price * item.quantity)
                 }, 0)
             }
-        }),
-        {name: "all-deals", partialize: (state) => ({calculateSum: state.calculateSum, allDeals: state.allDeals})}
-    )
+        })
 )
 
 export default StoreDeals

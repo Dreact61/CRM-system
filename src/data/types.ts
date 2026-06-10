@@ -23,3 +23,11 @@ export type Report = {
     wasWritten: string,
     expiresAt: string
 }
+
+export type Employee = {
+    name: string,
+    lastName: string,
+    phone: string,
+    email: string,
+    position: string,
+}
