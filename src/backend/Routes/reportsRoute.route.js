@@ -6,20 +6,23 @@ import { fileURLToPath } from 'url'
 
 const __fileName = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__fileName)
-const pathToJSON = path.join(__dirname,  '..', '..', 'data', 'employees.json')
+const pathToJSON = path.join(__dirname,  '..', '..', 'data', 'reports.json')
 
 let db
 try {
-    const fileData = fs.readFile(pathToJSON, 'utf-8', (err) => {
-        console.error(err)
-    })
+    const fileData = fs.readFileSync(pathToJSON, 'utf-8')
 
-    const valid = fileData ? fileData : '[]'
-    db = JSON.parse(valid)
+    if (!fileData.trim()) {
+        db = {reports: []}
+    } else {
+        db = JSON.parse(fileData.trim())
+    }
+    console.log(`Файл ${__fileName} успешно прочитан`)
 } catch(err) {
     console.error('Error: ', err.message);
     db = []
 }
+
 
 const reportsRouter = express.Router()
 
@@ -45,17 +48,6 @@ reportsRouter.post('/', async (req, res, next) => {
     } catch(err) {
         next(err)
     }
-})
-
-reportsRouter.get('/:wasWritten', (req, res) => {
-    const reportDate = req.params.wasWritten
-    const reportsList = db.reports || db
-
-    const foundReport = reportsList.find(r => r.wasWritten === reportDate)
-
-    if (!foundReport) return res.status(404).json('ОШИБКА: отчета за это число не существует')
-    
-    res.json(foundReport)
 })
 
 export default reportsRouter

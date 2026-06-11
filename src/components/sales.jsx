@@ -4,16 +4,16 @@ import StoreSales from "../data/typeSales"
 import { useEffect } from "react"
 
 export default function Sales() {
-    const {values, getTotalRevenue, initializeSales} = StoreSales()
+    const {allSales, currencyPlan, getTotalRevenue, initializeSales} = StoreSales()
 
     useEffect(() => {
         initializeSales()
-    })
+    }, [])
 
     const { theme } = SettingsStore()
     const isLight = theme === "light"
 
-    const plan = 800000
+    const plan = currencyPlan
     const progress = getTotalRevenue()
 
     const salesMainInfo = [
@@ -32,7 +32,7 @@ export default function Sales() {
     const borderStyles = isLight ? "border-[#f4ffff]" : "border-[#374151]";
 
     return (
-        <div className={`text-[10px] md:text-[14px] flex flex-col h-fit transition-colors ${isLight ? "bg-[#3f649bbe]" : "bg-[#0d1b31be]"}`}>
+        <div className={`text-[10px] min-h-screen md:text-[14px] flex flex-col h-fit transition-colors ${isLight ? "bg-[#3f649bbe]" : "bg-[#0d1b31be]"}`}>
             <Header />
             <h3 className={`${textStyles} pt-4 text-3xl`}>Продажи</h3>
 
@@ -55,8 +55,8 @@ export default function Sales() {
                 <h2 className="self-start">История продаж</h2>
 
                 <div className={`${borderStyles} ${textStyles} border-t gap-2 pt-1 pb-2`}>
-                    {values && values.length !== 0
-                    ? values.map(sale => (
+                    {allSales && allSales.length !== 0
+                    ? allSales.map(sale => (
                         <div style={{fontSize:"14px"}} key={sale.id} className={`${borderStyles} flex flex-col pb-2 pt-1 border-b gap-2 justify-between`}>
                             <h3 className={`${textStyles} flex flex-row justify-between`}>Заказчик: <p>{sale.customerName}</p></h3>
                             <h3 className={`${textStyles} flex flex-row justify-between`}>Наименование товара: <p>{sale.name}</p></h3>

@@ -10,12 +10,14 @@ const pathToJSON = path.join(__dirname,  '..', '..', 'data', 'deals.json')
 
 let db
 try {
-    const fileData = fs.readFile(pathToJSON, 'utf-8', (err) => {
-        console.error(err)
-    })
+    const fileData = fs.readFileSync(pathToJSON, 'utf-8')
 
-    const valid = fileData ? fileData : '[]'
-    db = JSON.parse(valid)
+    if (!fileData.trim()) {
+        db = {deals: []}
+    } else {
+        db = JSON.parse(fileData.trim())
+    }
+    console.log(`Файл ${__fileName} успешно прочитан`)
 } catch(err) {
     console.error('Error: ', err.message);
     db = []

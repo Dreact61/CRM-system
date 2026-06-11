@@ -12,21 +12,23 @@ export default function Deals() {
         initDeals()
     }, [])
 
-    const dealsArr = Array(allDeals)
+    const safeArr = Array.isArray(allDeals)
+    ? allDeals
+    : (allDeals && typeof allDeals === 'object' && Array.isArray(allDeals.deals) ? allDeals.deals : [])
 
-    const completed = dealsArr.filter(deal => deal.dealStatus !== 'current')
-    const current = dealsArr.filter(deal => deal.dealStatus === 'current')
-    const successful = dealsArr.filter(deal => deal.dealStatus === 'successful')
-    const failed = dealsArr.filter(deal => deal.dealStatus === 'failed')
+    const completed = safeArr.filter(deal => deal?.dealStatus !== 'current')
+    const current = safeArr.filter(deal => deal?.dealStatus === 'current')
+    const successful = safeArr.filter(deal => deal?.dealStatus === 'successful')
+    const failed = safeArr.filter(deal => deal?.dealStatus === 'failed')
     const lastDeal = completed[completed.length - 1]
     
     const dealsStats = [
         { label: "План:", val: "7" },
-        { label: "Всего совершено сделок:", val: failed + successful },
-        { label: "Успешных сделок:", val: successful },
-        { label: "Сорвавшихся сделок:", val: failed },
-        { label: "Незавершенных сделок:", val: current },
-        { label: "Процентиль успешных сделок:", val: `${Math.round(successful/(successful + failed) * 100)}%` },
+        { label: "Всего совершено сделок:", val: failed.length + successful.length },
+        { label: "Успешных сделок:", val: successful.length },
+        { label: "Сорвавшихся сделок:", val: failed.length },
+        { label: "Незавершенных сделок:", val: current.length },
+        { label: "Процентиль успешных сделок:", val: `${Math.round(successful.length/(successful.length + failed.length) * 100)}%` },
       ];
     const isLight = theme === "light"
 
@@ -40,7 +42,7 @@ export default function Deals() {
     const borderStyles = isLight ? "border-[#f4ffff]" : "border-[#374151]";
 
     return (
-        <div className={`text-[10px] md:text-[14px] flex flex-col h-fit transition-colors ${isLight ? "bg-[#3f649bbe]" : "bg-[#0d1b31be]"}`}>
+        <div className={`text-[10px] md:text-[14px] flex flex-col min-h-screen h-fit transition-colors ${isLight ? "bg-[#3f649bbe]" : "bg-[#0d1b31be]"}`}>
             <Header />
 
         <div className={`${cardStyles} md:w-9/10 w-3/5`}>

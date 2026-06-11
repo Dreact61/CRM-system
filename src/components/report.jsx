@@ -1,11 +1,14 @@
 import Header from "./header"
 import SettingsStore from "../data/typeSettings";
 import reportStore from "../data/typeReports";
+import { useEffect } from "react";
 
 export default function Report() {
     const {allReports, error, loading, initReport, addReport} = reportStore()
 
-    initReport()
+    useEffect(() => {
+        initReport()
+    }, [])
 
     const {theme} = SettingsStore()
     const isLight = theme === "light"
@@ -44,38 +47,40 @@ export default function Report() {
         <div  className={`text-[10px] md:text-[14px] flex flex-col min-h-screen items-center h-fit transition-colors ${isLight ? "bg-[#3f649bbe]" : "bg-[#0d1b31be]"}`}>
             <Header />
 
-            <div className={`w-screen h-[80vh] md:pt-20 pt-4 flex mb-2 items-center md:justify-center`}>
+            <div className={`w-screen h-[80vh] flex-col md:pt-20 pt-4 flex mb-2 items-center md:justify-center`}>
                     <form className={cardStyles}>
                         <h2 className={`${borderStyles} border-b w-full p-1`}>Заполните всю информацию</h2>
 
-                        <div className={`${formStyles} border-b pb-2`}>
+                        <div className={`${formStyles} border-b pb-2 px-10`}>
                             <label htmlFor="otKogo">От кого:</label>
                             <input type="text" id="otKogo" placeholder="Полное ФИО" className={inputStyles} required/>
                         </div>
-                        <div className={`${formStyles} border-b pb-2`}>
+                        <div className={`${formStyles} border-b pb-2 px-10`}>
                             <label htmlFor="komu">Кому:</label>
                             <input type="text" id="komu" placeholder="Полное ФИО" className={inputStyles} required/>
                         </div>
                         <div className={`${formStyles} flex-col border-b pb-2`}>
                             <label htmlFor="report">Кому:</label>
-                            <textarea className={`${inputStyles} w-full resize-none min-h-[80px] md:h-24`} required type="text" id="komu" placeholder="Описание отчета"/>
+                            <textarea className={`${inputStyles} w-full resize-none min-h-[80px] md:h-24`} required type="text" id="report" placeholder="Описание отчета"/>
                         </div>
-                        <div className={`${formStyles} flex-col border-b pb-2 gap-2`}>
+                        <div className={`${formStyles} flex-col border-b pb-2 gap-2 px-10`}>
                             <p>Временной промежуток:</p>
                             <div className={`${formStyles}`}>
                                 <label htmlFor="time-1">От:</label>
-                                <input type="date" id="time" className={inputStyles} required/>
+                                <input type="date" id="time-1" className={inputStyles} required/>
                             </div>
                             <div className={`${formStyles}`}>
                                 <label htmlFor="time-2">До:</label>
-                                <input type="date" id="time" className={inputStyles} required/>
+                                <input type="date" id="time-2" className={inputStyles} required/>
                             </div>
                         </div>
 
-                        <button className={buttonStyles} type="submit">Отправить</button>
+                        <button className={buttonStyles} onSubmit={() => {
+                                addReport()
+                            }} type="submit">Отправить</button>
                     </form>
 
-                    <div>
+                    <div className={`${cardStyles}`}>
                         <h2>Предыдущие отчеты:</h2>
 
                         <ul className="list-none">
@@ -90,7 +95,7 @@ export default function Report() {
                                         <p>Кому: {rep.to}</p>
                                     </li>
                                 })
-                                : "Отчетов пока не было."
+                                : <p>Отчетов пока не было.</p>
                             }
                         </ul>
                     </div>

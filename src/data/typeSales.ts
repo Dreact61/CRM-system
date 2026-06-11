@@ -1,10 +1,8 @@
 import { create } from "zustand";
-import { persist } from "zustand/middleware";
 import { Deal, Good } from "./types.ts";
 import axios from "axios";
 
 const DEALS = `http://localhost:5000/api/deals`
-const GOODS = `http://localhost:5000/api/goods`
 
 export type salesValues = {
     name: string,
@@ -18,87 +16,73 @@ export type salesValues = {
 }
 
 export type salesStore = {
-    values: salesValues[],
     allDeals: Deal[],
-    allGoods: Good[],
+    allSales: salesValues[]
     currencyPlan: number,
     error: string | null,
     loading: boolean,
-    initDeals: () => Promise<void>,
-    initGoods: () => Promise<void>,
-    initializeSales: () => salesValues[],
+    initializeSales: () => Promise<void>,
     getTotalRevenue: () => number
 }
- 
+
 const StoreSales = create<salesStore>()(
-        (set, get) => ({
-                values: [],
-                allDeals: [],
-                allGoods: [],
-                currencyPlan: 800000,
-                error: null,
-                loading: false,
+    (set, get) => ({
+        allDeals: [],
+        allSales: [],
+        currencyPlan: 800000,
+        error: null,
+        loading: false,
 
-                initDeals: async() => {
-                    try {
-                        set({loading: true, error: null})
+        initializeSales: async () => {
+            try {
+                set({ loading: true, error: null })
 
-                        const deals = await axios.get<Deal[]>(`${DEALS}`)
-                        set({allDeals: deals.data, loading: false})
-                    } catch (err: any) {
-                        console.error(`Error: ${err.message}`)
-                        set({error: err.message, loading: false})
-                    }
-                },
+                const deals = await axios.get<Deal[]>(DEALS)
+                const safeDeals = Array.isArray(deals?.data) ? deals.data : []
 
-                initGoods: async() => {
-                    try {
-                        set({loading: true, error: null})
+                const successfulDeals = safeDeals.filter(deal => deal.dealStatus === "successful")
 
-                        const goods = await axios.get<Good[]>(`${GOODS}`)
-                        set({allGoods: goods.data, loading: false})
-                    } catch (err: any) {
-                        console.error(`Error: ${err.message}`)
-                        set({error: err.message, loading: false})
-                    }
-                },
+                const soldGoods: salesValues[] = []
 
-                initializeSales: () => {
-                    const {allDeals} = get()
-                    const successfulDeals = allDeals.filter(deal => deal.dealStatus === "successful")
+                successfulDeals.forEach(deal => {
+                    deal?.clientBuys.forEach((item: Good) => {
+                        const existingSale = soldGoods.find(sale => sale.id === item.id)
 
-                    const soldGoods: salesValues[] = []
-                
-                    successfulDeals.forEach(deal => {
-                        deal.clientBuys.forEach((item:Good) => {
-                            const existingSale = soldGoods.find(sale => sale.id === item.id)
-                
-                            if (existingSale) {
-                                existingSale.quantity += item.quantity
-                                existingSale.sum += item.price * item.quantity
-                            } else {
-                                soldGoods.push({
-                                    name: item.name,
-                                    id: item.id,
-                                    price: item.price,
-                                    desc: item.desc,
-                                    quantity: item.quantity,
-                                    sum: item.price * item.quantity,
-                                    dealerName: deal.dealerName,
-                                    customerName: deal.clientName
-                                })
-                            }
-                        })
+                        if (existingSale) {
+                            existingSale.quantity += item.quantity
+                            existingSale.sum += item.price * item.quantity
+                        } else {
+                            soldGoods.push({
+                                name: item.name,
+                                id: item.id,
+                                price: item.price,
+                                desc: item.desc,
+                                quantity: item.quantity,
+                                sum: item.price * item.quantity,
+                                dealerName: deal.dealerName,
+                                customerName: deal.clientName
+                            })
+                        }
                     })
-                    return soldGoods
-                },
+                })
                 
-                getTotalRevenue: () => {
-                    const {values} = get()
-                    return values.reduce((sum, item) => sum + item.sum, 0)
-                },
+                set({
+                    allDeals: safeDeals,
+                    allSales: soldGoods,
+                    loading: false
+                })
+            } catch (err: any) {
+                console.error(`Error: ${err.message}`)
+                set({ error: err.message, loading: false, allDeals: [], allSales: [] })
             }
-        )
+        },
+
+        getTotalRevenue: () => {
+            const { allSales } = get()
+            return allSales.reduce((sum, item) => sum + item.sum, 0)
+        },
+    }
+    )
 )
 
 export default StoreSales
