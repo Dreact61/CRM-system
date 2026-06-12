@@ -4,7 +4,7 @@ import reportStore from "../data/typeReports";
 import { useEffect } from "react";
 
 export default function Report() {
-    const {allReports, error, loading, initReport, addReport} = reportStore()
+    const {allReports = [], error, loading, initReport, addReport} = reportStore()
 
     useEffect(() => {
         initReport()
@@ -51,11 +51,11 @@ export default function Report() {
                     <form className={cardStyles}>
                         <h2 className={`${borderStyles} border-b w-full p-1`}>Заполните всю информацию</h2>
 
-                        <div className={`${formStyles} border-b pb-2 px-10`}>
+                        <div className={`${formStyles} border-b pb-2 px-2 gap-[10%]`}>
                             <label htmlFor="otKogo">От кого:</label>
                             <input type="text" id="otKogo" placeholder="Полное ФИО" className={inputStyles} required/>
                         </div>
-                        <div className={`${formStyles} border-b pb-2 px-10`}>
+                        <div className={`${formStyles} border-b pb-2 px-2 gap-[10%]`}>
                             <label htmlFor="komu">Кому:</label>
                             <input type="text" id="komu" placeholder="Полное ФИО" className={inputStyles} required/>
                         </div>
@@ -77,7 +77,7 @@ export default function Report() {
 
                         <button className={buttonStyles} onSubmit={() => {
                                 addReport()
-                            }} type="submit">Отправить</button>
+                            }} type="submit" disabled={loading}>Отправить</button>
                     </form>
 
                     <div className={`${cardStyles}`}>
@@ -86,15 +86,15 @@ export default function Report() {
                         <ul className="list-none">
                             {
                                 allReports && allReports.length !== 0
-                                ? allReports.map((rep, index) => {
-                                    <li key={index}>
-                                        <h3>Отчетность №{index}</h3>
+                                ? allReports.map((rep, index) => (
+                                    <li key={index} className={borderStyles}>
+                                        <h3>Отчетность №{index + 1}</h3>
                                         <p>Aктуален (с-по): {rep.wasWritten} - {rep.expiresAt}</p>
                                         <p>Содержание: {rep.report}</p>
                                         <p>От: {rep.from}</p>
                                         <p>Кому: {rep.to}</p>
                                     </li>
-                                })
+                                ))
                                 : <p>Отчетов пока не было.</p>
                             }
                         </ul>

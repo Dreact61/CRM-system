@@ -13,7 +13,7 @@ export default function App() {
   const isLight = theme === "light"
   
   const {calculateSum, initDeals, allDeals = [], plan} = StoreDeals()
-  const {initReport ,lastReport, allReports = []} = reportStore()
+  const {initReport ,lastReport} = reportStore()
   const {getTotalRevenue, currencyPlan} = StoreSales()
 
   useEffect(() => {

@@ -32,7 +32,6 @@ const reportStore = create<Store>()(
                         allReports: safeData,
                         lastReport: safeData.length > 0 ? safeData[safeData.length - 1] : null
                     })
-                    console.log('Новый отчет успешно отправлен!')
                 } catch (err: any) {
                     console.error(`Ошибка при загрузке: ${err.message}`)
                     set({ 
@@ -47,10 +46,10 @@ const reportStore = create<Store>()(
 
             addReport: async (newReport) => {
                 try {
-                    set({loading: false, error: null})
-                    const res = await axios.post(REPORTS, newReport)
-                    const createdRep = res.data
-                    const currentReps = get().allReports
+                    set({loading: true, error: null})
+                    const res = await axios.post<Report>(REPORTS, newReport)
+                    const createdRep = res.data || newReport
+                    const currentReps = get().allReports || []
     
                     set({
                         loading: false,

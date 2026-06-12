@@ -20,7 +20,7 @@ try {
     console.log(`Файл ${__fileName} успешно прочитан`)
 } catch(err) {
     console.error('Error: ', err.message);
-    db = []
+    db = {reports: []}
 }
 
 
