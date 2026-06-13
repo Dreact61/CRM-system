@@ -1,12 +1,13 @@
 import "/src/tailwind.css"
 import { Link, useLocation } from "react-router"
-import SettingsStore from "../data/typeSettings"
+import SettingsStore from "../stores/typeSettings"
 
 const navLinks = [
   { to: "/", label: "Главная" },
   { to: "/deals", label: "Сделки" },
   { to: "/sales", label: "Продажи" },
   { to: "/analytics", label: "Аналитика" },
+  { to: "/report", label: "Отчетность" },
 ];
 
 export default function Header() {

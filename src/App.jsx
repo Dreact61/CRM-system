@@ -1,12 +1,11 @@
 import { Link } from "react-router"
 import Header from "./components/header"
 import "/src/tailwind.css"
-import StoreDeals from "./data/typeDeals"
-import StoreSales from "./data/typeSales"
-import SettingsStore from "./data/typeSettings"
-import reportStore from "./data/typeReports"
+import StoreDeals from "./stores/typeDeals"
+import StoreSales from "./stores/typeSales"
+import SettingsStore from "./stores/typeSettings"
+import reportStore from "./stores/typeReports"
 import { useEffect } from "react"
-import { all } from "axios"
 
 export default function App() {
   const { theme, setThemeToDark, setThemeToLight } = SettingsStore()

@@ -1,6 +1,6 @@
 import Header from "./header"
-import SettingsStore from "../data/typeSettings"
-import StoreSales from "../data/typeSales"
+import SettingsStore from "../stores/typeSettings"
+import StoreSales from "../stores/typeSales"
 import { useEffect } from "react"
 
 export default function Sales() {

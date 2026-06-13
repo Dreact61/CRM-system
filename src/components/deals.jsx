@@ -1,6 +1,6 @@
 import Header from "./header";
-import SettingsStore from "../data/typeSettings";
-import StoreDeals from "../data/typeDeals"
+import SettingsStore from "../stores/typeSettings";
+import StoreDeals from "../stores/typeDeals"
 import { useEffect } from "react";
 
 

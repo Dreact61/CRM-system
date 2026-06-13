@@ -30,35 +30,4 @@ employeesRouter.get('/', (req, res) => {
     res.json(db.employees || db)
 })
 
-employeesRouter.post('/', async (req, res, next) => {
-    try {
-        const body = req.body
-    
-        if (!body || Object.keys(body).length === 0) return res.status(400).json('ОШИБКА: тело запроса пустое!')
-        
-        if (db.employees) {
-            db.employees.push(body)
-        } else {
-            db.push(body)
-        }
-    
-        await saveToFile('employees', db)
-    
-        res.status(201).json(body)
-    } catch(err) {
-        next(err)
-    }
-})
-
-employeesRouter.get('/:name', (req, res) => {
-    const name = req.params.name
-    const employeesList = db.employees || db
-
-    const foundEmployee = employeesList.find(e => e.name === name)
-
-    if (!foundEmployee) return res.status(404).json('ОШИБКА: сотрудника с таким именем нет в базе')
-    
-    res.json(foundEmployee)
-})
-
 export default employeesRouter

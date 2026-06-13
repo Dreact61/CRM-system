@@ -1,16 +1,164 @@
-# React + Vite
+# 📋 Система Учета Отчетов (Reports Management System)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Простое и надежное Fullstack-приложение для создания, хранения и просмотра внутренней отчетности. Проект построен на связке React (Zustand) + Express и использует локальный JSON-файл в качестве отказоустойчивой базы данных.
 
-Currently, two official plugins are available:
+Имеются функции смены темы и адаптивность под разные устройства.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+P.S.: POST-запросы пока не работают корректно, возможны некоторые баги. Работаю над этим.
 
-## React Compiler
+## 🚀 Стек технологий
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+*   **Frontend**: React, TypeScript, Zustand (стейт-менеджер), Axios, TailwindCSS.
+*   **Backend**: Node.js, Express, ES6 Modules (`import/export`), nodemon.
+*   **База данных**: Локальныe JSON-файлы `reports.json, employees.json, goods.json, deals.json` (с автоматическим восстановлением структуры).
 
-## Expanding the ESLint configuration
+---
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## 🛠️ Особенности архитектуры и логики
+
+1.  **Отказоустойчивое чтение/запись JSON**: Бэкенд застрахован от повреждения файлов. Если файл пуст или поврежден, система автоматически восстановит структуру объекта `{ reports: [] }` и бережно обернет данные, предотвращая затирание БД.
+2.  **Иммутабельное обновление UI**: При отправке нового отчета Zustand-стор валидирует индикатор загрузки (`loading: true`), делает POST-запрос и мгновенно дописывает новый отчет в массив без необходимости делать повторный GET-запрос.
+3.  **Безопасный рендеринг**: React-компонент использует безопасный обход массива с явным возвратом JSX-элементов, предотвращая появление пустых (`undefined`) элементов на экране.
+
+---
+
+## ⚙️ Эндпоинты API (Backend)
+
+### `GET /api/reports`
+*   **Описание**: Получение списка всех отчетов.
+*   **Формат ответа**: Массив объектов `[ { "wasWritten": "...", "expiresAt": "...", ... } ]`.
+
+### `POST /api/reports`
+*   **Описание**: Создание нового отчета.
+*   **Тело запроса (Body)**:
+    ```json
+    {
+      "wasWritten": "15.05.2026",
+      "expiresAt": "22.05.2026",
+      "report": "Текст отчета...",
+      "from": "Иванов И.И.",
+      "to": "Петров П.П."
+    }
+    ```
+
+### `GET /api/goods`
+*   **Описание**: Получение списка всех товаров.
+*   **Формат ответа**: Массив объектов `[ { "id": "...", "name": "...", ... } ]`.
+
+### `GET /api/deals`
+*   **Описание**: Получение списка всех сделок.
+*   **Формат ответа**: Массив объектов `[ { "dealId": "...", "clientName": "...", ... } ]`.
+
+### `GET /api/employees`
+*   **Описание**: Получение списка всех сотрудников.
+*   **Формат ответа**: Массив объектов `[ { "name": "...", "lastName": "...", ... } ]`.
+
+*   **Валидация**: Сервер возвращает ошибку `400 Bad Request`, если тело запроса пустое.
+
+---
+
+## 🏎️ Как запустить проект локально
+
+### 1. Клонирование и установка зависимостей
+```bash
+# Установите зависимости бэкенда и фронтенда
+npm install
+```
+
+### 2. Запуск бэкенда
+```bash
+# Перейдите в папку бэкенда и запустите сервер (в режиме разработки используется nodemon)
+npm run server
+```
+
+### 3. Запуск фронтенда
+```bash
+# В новой вкладке терминала запустите клиентскую часть
+npm run dev
+```
+
+---
+
+## 📝 Формат данных:
+### В `reports.json`:
+
+Файл БД всегда сохраняет строгую структуру объекта:
+```json
+{
+  "reports": [
+    {
+      "wasWritten": "12.06.2026",
+      "expiresAt": "19.06.2026",
+      "report": "Успешно завершен первый этап тестирования роутеров.",
+      "from": "Разработчик",
+      "to": "Тимлид"
+    }
+  ]
+}
+```
+
+### В `deals.json`:
+
+Файл БД всегда сохраняет строгую структуру объекта:
+```json
+{
+  "deals": [
+      {
+        "dealId": 101,
+        "clientName": "ООО 'ТехноРешения'",
+        "clientEmail": "zakaz@technoresh.ru",
+        "clientPhoneNumber": "+7 999 111-22-33",
+        "clientBuys": [
+          {
+            "id": 4,
+            "name": "Наушники с шумоподавлением",
+            "desc": "Полноразмерные Bluetooth-наушники с активным шумоподавлением (ANC).",
+            "price": 12500,
+            "quantity": 28
+          },
+          {
+            "id": 9,
+            "name": "Игровое кресло",
+            "desc": "Ортопедическое кресло с регулировкой подлокотников и наклоном спинки.",
+            "price": 18990,
+            "quantity": 8
+          }
+        ],
+        "dealerName": "Иван Иванов",
+        "dealStatus": "successful"
+      }
+  ]
+}
+```
+### В `employees.json`:
+
+Файл БД всегда сохраняет строгую структуру объекта:
+```json
+{
+  "employees": [
+      {
+        "name": "Иван",
+        "lastName": "Иванов",
+        "phone": "+7 XXX XXX-XX-XX",
+        "email": "IvanovIvan99@fakemail.com",
+        "position": "Старший менеджер"
+      }
+  ]
+}
+```
+### В `goods.json`:
+
+Файл БД всегда сохраняет строгую структуру объекта:
+```json
+{
+  "goods": [
+    {
+      "id": 1,
+      "name": "Беспроводная мышь",
+      "desc": "Эргономичная оптическая мышь с тихими кликами и RGB-подсветкой.",
+      "price": 2490,
+      "quantity": 45
+    }
+  ]
+}
+```

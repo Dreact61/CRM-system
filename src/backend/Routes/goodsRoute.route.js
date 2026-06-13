@@ -30,35 +30,4 @@ goodsRouter.get('/', (req, res) => {
     res.json(db.goods || db)
 })
 
-goodsRouter.post('/', async (req, res, next) => {
-    try {
-        const newGood = req.body
-    
-        if (!newGood || Object.keys(newGood).length === 0) return res.status(404).json('ОШИБКА: тело запроса не может быть пустым')
-    
-        if (db.goods) {
-            db.goods.push(newGood)
-        } else {
-            db.push(newGood)
-        }
-    
-        await saveToFile('goods', db)
-    
-        res.status(201).json(newGood)
-    } catch(err) {
-        next(err)
-    }
-})
-
-goodsRouter.get('/:id', (req, res) => {
-    const targetId = req.params.id
-    const goodsList = db.goods || db
-
-    const foundGood = goodsList.find(g => g.id === targetId)
-
-    if(!targetId) return res.status(404).json('ОШИБКА: Товара с данным id не существует')
-
-    res.json(foundGood)
-})
-
 export default goodsRouter

@@ -1,6 +1,6 @@
 import Header from "./header"
-import SettingsStore from "../data/typeSettings"
-import AnalyticsChart from "../data/AnalyticsCharts"
+import SettingsStore from "../stores/typeSettings"
+import AnalyticsChart from "./AnalyticsCharts"
 
 export default function Analytics() {
     const {theme} = SettingsStore()

@@ -1,6 +1,6 @@
 import Header from "./header"
-import SettingsStore from "../data/typeSettings";
-import reportStore from "../data/typeReports";
+import SettingsStore from "../stores/typeSettings";
+import reportStore from "../stores/typeReports";
 import { useEffect } from "react";
 
 export default function Report() {

@@ -10,8 +10,8 @@ import {
     Tooltip, 
     Legend 
   } from "recharts";
-  import SettingsStore from "../data/typeSettings";
-import employeesData from "./employees.json";
+  import SettingsStore from "../stores/typeSettings";
+import employeesData from "../data/employees.json";
 const employees = employeesData.employees;
   
   const monthlyPlan = [
