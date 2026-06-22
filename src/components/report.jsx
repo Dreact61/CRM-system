@@ -44,10 +44,10 @@ export default function Report() {
     )
     
     return (
-        <div  className={`text-[10px] md:text-[14px] flex flex-col min-h-screen items-center h-fit transition-colors ${isLight ? "bg-[#3f649bbe]" : "bg-[#0d1b31be]"}`}>
+        <div  className={`text-[10px] md:text-[14px] md:w-full flex flex-col min-h-screen items-center h-fit transition-colors ${isLight ? "bg-[#3f649bbe]" : "bg-[#0d1b31be]"}`}>
             <Header />
 
-            <div className={`w-screen h-[80vh] flex-col md:pt-20 pt-4 flex mb-2 items-center md:justify-center`}>
+            <div className={`w-screen h-max flex-col md:pt-20 pt-4 flex mb-2 min-h-screen items-center md:justify-center`}>
                     <form className={cardStyles}>
                         <h2 className={`${borderStyles} border-b w-full p-1`}>Заполните всю информацию</h2>
 
@@ -89,10 +89,10 @@ export default function Report() {
                                 ? allReports.map((rep, index) => (
                                     <li key={index} className={borderStyles}>
                                         <h3>Отчетность №{index + 1}</h3>
-                                        <p>Aктуален (с-по): {rep.wasWritten} - {rep.expiresAt}</p>
+                                        <p>Aктуален (с-по): {rep.was_written} - {rep.expires_at}</p>
                                         <p>Содержание: {rep.report}</p>
-                                        <p>От: {rep.from}</p>
-                                        <p>Кому: {rep.to}</p>
+                                        <p>От: {rep.from_address}</p>
+                                        <p>Кому: {rep.to_address}</p>
                                     </li>
                                 ))
                                 : <p>Отчетов пока не было.</p>

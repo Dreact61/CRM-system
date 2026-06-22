@@ -11,23 +11,20 @@ export default function App() {
   const { theme, setThemeToDark, setThemeToLight } = SettingsStore()
   const isLight = theme === "light"
   
-  const {calculateSum, initDeals, allDeals = [], plan} = StoreDeals()
+  const {calculateSum, initDeals, allDeals, plan} = StoreDeals()
   const {initReport ,lastReport} = reportStore()
-  const {getTotalRevenue, currencyPlan} = StoreSales()
+  const {getTotalRevenue, initializeSales, currencyPlan} = StoreSales()
 
   useEffect(() => {
     initDeals()
     initReport()
+    initializeSales()
   },[])
 
-  const safeDeals = Array.isArray(allDeals) 
-  ? allDeals 
-  : (allDeals && typeof allDeals === 'object' && Array.isArray(allDeals.deals) ? allDeals.deals : [])
-
-  const completed = safeDeals.filter(deal => deal?.dealStatus !== 'current')
-  const current = safeDeals.filter(deal => deal?.dealStatus === 'current')
-  const successful = safeDeals.filter(deal => deal?.dealStatus === 'successful')
-  const failed = safeDeals.filter(deal => deal?.dealStatus === 'failed')
+  const completed = allDeals.filter(deal => deal?.deal_status !== 'current')
+  const current = allDeals.filter(deal => deal?.deal_status === 'current')
+  const successful = allDeals.filter(deal => deal?.deal_status === 'successful')
+  const failed = allDeals.filter(deal => deal?.deal_status === 'failed')
   const lastDeal = completed[completed.length - 1]
 
   const dealsStats = [
@@ -123,8 +120,8 @@ export default function App() {
             <h2 className="self-start px-2">Последняя отчетность:</h2>
             
             <div className={`border-t border-b pb-4 pt-4 ${borderStyles}`}>
-              <h3 className={`${textStyles} flex justify-between`}>Дата сдачи: <p>{lastReport ? lastReport.wasWritten : "(Дата)"}</p></h3>
-              <h3 className={`${textStyles} flex justify-between`}>Дата истечения: <p>{lastReport ? lastReport.expiresAt : "(Дата)"}</p></h3>
+              <h3 className={`${textStyles} flex justify-between`}>Дата сдачи: <p>{lastReport ? lastReport.was_written : "(Дата)"}</p></h3>
+              <h3 className={`${textStyles} flex justify-between`}>Дата истечения: <p>{lastReport ? lastReport.expires_at : "(Дата)"}</p></h3>
             </div>
 
             <div className={`flex flex-col pt-2 md:pt-4 pb-4 md:pb-8 border-b ${borderStyles}`}>
@@ -133,8 +130,8 @@ export default function App() {
             </div>
 
             <div className="pb-2 pt-4">
-              <h3 className={`${textStyles} flex justify-between`}>От: <p>{lastReport ? lastReport.from : "(ФИО)"}</p></h3>
-              <h3 className={`${textStyles} flex justify-between`}>Для: <p>{lastReport ? lastReport.to : "(ФИО)"}</p></h3>
+              <h3 className={`${textStyles} flex justify-between`}>От: <p>{lastReport ? lastReport.from_address : "(ФИО)"}</p></h3>
+              <h3 className={`${textStyles} flex justify-between`}>Для: <p>{lastReport ? lastReport.to_address : "(ФИО)"}</p></h3>
             </div>
           </div>
 
@@ -143,14 +140,14 @@ export default function App() {
             <div className={`pt-4 border-t ${borderStyles}`}>
               {lastDeal ? (
                 <div className={`${textStyles}`}>
-                  <h3 className="flex flex-row justify-between">Статус: <p>{lastDeal.dealStatus === 'successful' ? "Успешная" : "Провальная"}</p></h3>
-                  <h3 className="flex flex-row justify-between">Заказчик: <p>{lastDeal.clientName}</p></h3>
-                  <h3 className="flex flex-row justify-between">Эл. почта заказчика: <p>{lastDeal.clientEmail}</p></h3>
-                  <h3 className="flex flex-row justify-between">Провел сделку: <p>{lastDeal.dealerName}</p></h3>
+                  <h3 className="flex flex-row justify-between">Статус: <p>{lastDeal.deal_status === 'successful' ? "Успешная" : "Провальная"}</p></h3>
+                  <h3 className="flex flex-row justify-between">Заказчик: <p>{lastDeal.client_name}</p></h3>
+                  <h3 className="flex flex-row justify-between">Эл. почта заказчика: <p>{lastDeal.client_email}</p></h3>
+                  <h3 className="flex flex-row justify-between">Провел сделку: <p>{lastDeal.dealer_name}</p></h3>
                   
                   <div className={`${cardStyles} w-full flex flex-col mt-4`}>
                     <p className={`${textStyles} self-start font-bold`}>Товары:</p>
-                    {lastDeal.clientBuys?.map(good => (
+                    {lastDeal.client_buys?.map(good => (
                       <div key={good.id} className={`${borderStyles} pt-2 pb-2 border-b flex flex-col`}>
                         <p>{good.name}</p>
                         <b>Цена(шт): {good.price}</b>

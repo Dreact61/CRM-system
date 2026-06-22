@@ -1,33 +1,15 @@
 import express from 'express'
-import { saveToFile } from '../services.js'
-import fs from 'fs'
-import path from 'path'
-import { fileURLToPath } from 'url'
-
-const __fileName = fileURLToPath(import.meta.url)
-const __dirname = path.dirname(__fileName)
-const pathToJSON = path.join(__dirname,  '..', '..', 'data', 'employees.json')
-
-let db
-try {
-    const fileData = fs.readFileSync(pathToJSON, 'utf-8')
-
-    if (!fileData.trim()) {
-        db = {employees: []}
-    } else {
-        db = JSON.parse(fileData.trim())
-    }
-    console.log(`Файл ${__fileName} успешно прочитан`)
-} catch(err) {
-    console.error('Error: ', err.message);
-    db = []
-}
-
+import client from '../server.js'
 
 const employeesRouter = express.Router()
 
-employeesRouter.get('/', (req, res) => {
-    res.json(db.employees || db)
+employeesRouter.get('/', async (req, res) => {
+    try {
+        const response = await client.query('SELECT * FROM EMPLOYEES')
+        res.status(200).json(response.rows)
+    } catch (err) {
+        res.status(500).json("ОШИБКА: ", err.message)
+    }
 })
 
 export default employeesRouter

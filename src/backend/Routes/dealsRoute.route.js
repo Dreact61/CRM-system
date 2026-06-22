@@ -1,32 +1,32 @@
 import express from 'express'
-import { saveToFile } from '../services.js'
-import fs from 'fs'
-import path from 'path'
-import { fileURLToPath } from 'url'
-
-const __fileName = fileURLToPath(import.meta.url)
-const __dirname = path.dirname(__fileName)
-const pathToJSON = path.join(__dirname,  '..', '..', 'data', 'deals.json')
-
-let db
-try {
-    const fileData = fs.readFileSync(pathToJSON, 'utf-8')
-
-    if (!fileData.trim()) {
-        db = {deals: []}
-    } else {
-        db = JSON.parse(fileData.trim())
-    }
-    console.log(`Файл ${__fileName} успешно прочитан`)
-} catch(err) {
-    console.error('Error: ', err.message);
-    db = []
-}
+import axios from 'axios'
+import client from '../server.js'
 
 const dealsRouter = express.Router()
 
-dealsRouter.get('/', (req, res) => {
-    res.json(db.deals || db)
+dealsRouter.get('/', async (req, res) => {
+    try {
+        const response = await client.query('SELECT * FROM deals')
+        const items = await client.query('SELECT * FROM deal_items')
+        res.status(200).json({deals: response.rows, items: items.rows})
+    } catch (err) {
+        res.status(500).json({message: "ОШИБКА:", error: err.message})
+    }
+})
+
+dealsRouter.post('/', async(req,res) => {
+    try {
+        const sentData = req.body
+        if (!sentData || Object.keys(sentData).length === 0) return res.status(400).json({message:'ОШИБКА:', error:'тело запроса не модет быть пустым.'})
+        
+        await axios.post(`http://localhost:5000/api/deals`, sentData)
+        res.status(201).json({
+            message:'УСПЕХ: данные о сделке успешно отправлены на сервер.',
+            success: true,
+        })
+    } catch (err) {
+        res.status(400).json({success: false, message: err.message})
+    }
 })
 
 export default dealsRouter

@@ -1,33 +1,40 @@
 export type Good = {
     id: number,
     name: string,
-    desc: string,
-    price: number,
-    quantity: number
+    description: string | null,
+    price: number | undefined
 } 
 
+export interface Item extends Good {
+    good_id: number,
+    deal_id: number,
+    quantity: number | undefined
+}
+
 export type Deal = {
-    dealId: number,
-    clientName: string,
-    clientEmail: string,
-    clientPhoneNumber: string,
-    clientBuys: Good[],
-    dealerName: string,
-    dealStatus: "successful" | "current" | "failed" 
+    id: number,
+    client_name: string | any,
+    client_email: string,
+    client_phone: string,
+    client_buys: Item[],
+    dealer_id?: number,
+    dealer_name:string,
+    deal_status: "successful" | "current" | "failed"
 }
 
 export type Report = {
-    from: string,
-    to: string,
+    from_address: number | string,
+    to_address: number | string,
     report: string,
-    wasWritten: string,
-    expiresAt: string
+    was_written: string,
+    expires_at: string
 }
 
 export type Employee = {
+    id: number,
     name: string,
-    lastName: string,
+    last_name: string,
     phone: string,
     email: string,
-    position: string,
+    pos: string,
 }

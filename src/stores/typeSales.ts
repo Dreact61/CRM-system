@@ -1,8 +1,9 @@
 import { create } from "zustand";
-import { Deal, Good } from "./types.ts";
+import { Deal, Item, Good } from "./types.ts";
 import axios from "axios";
 
 const DEALS = `http://localhost:5000/api/deals`
+const GOODS = `http://localhost:5000/api/goods`
 
 export type salesValues = {
     name: string,
@@ -11,13 +12,18 @@ export type salesValues = {
     desc: string,
     quantity: number,
     sum: number,
-    dealerName: string,
-    customerName: string
+    clientName: any
+}
+
+type Response = {
+    deals: Deal[],
+    items: Item[],
 }
 
 export type salesStore = {
-    allDeals: Deal[],
-    allSales: salesValues[]
+    all_Deals: Deal[],
+    allSales: salesValues[],
+    totalRevenue: number,
     currencyPlan: number,
     error: string | null,
     loading: boolean,
@@ -27,8 +33,9 @@ export type salesStore = {
 
 const StoreSales = create<salesStore>()(
     (set, get) => ({
-        allDeals: [],
+        all_Deals: [],
         allSales: [],
+        totalRevenue: 0,
         currencyPlan: 800000,
         error: null,
         loading: false,
@@ -37,50 +44,69 @@ const StoreSales = create<salesStore>()(
             try {
                 set({ loading: true, error: null })
 
-                const deals = await axios.get<Deal[]>(DEALS)
-                const safeDeals = Array.isArray(deals?.data) ? deals.data : []
+                const dealsRes = await axios.get<Response>(DEALS)
+                const goodsRes = await axios.get<Good[]>(GOODS)
 
-                const successfulDeals = safeDeals.filter(deal => deal.dealStatus === "successful")
 
+                const goods = goodsRes.data
+                const deals:Deal[] = dealsRes.data.deals
+                const items:Item[] = dealsRes.data.items
+
+                const successfulDeals = deals.filter(deal => deal.deal_status === 'successful')
+                const successfulDealsIDs = new Set(successfulDeals.map(d => d.id))
+                const purchasedItems = Array.isArray(items) ? items: []
+                
                 const soldGoods: salesValues[] = []
 
-                successfulDeals.forEach(deal => {
-                    deal?.clientBuys.forEach((item: Good) => {
-                        const existingSale = soldGoods.find(sale => sale.id === item.id)
+                purchasedItems.forEach(item => {
+                    if (!successfulDealsIDs.has(item.deal_id)) return
 
-                        if (existingSale) {
-                            existingSale.quantity += item.quantity
-                            existingSale.sum += item.price * item.quantity
-                        } else {
-                            soldGoods.push({
-                                name: item.name,
-                                id: item.id,
-                                price: item.price,
-                                desc: item.desc,
-                                quantity: item.quantity,
-                                sum: item.price * item.quantity,
-                                dealerName: deal.dealerName,
-                                customerName: deal.clientName
-                            })
-                        }
-                    })
+                    const targetGoodId = item.good_id
+
+                    const existingSale = soldGoods.find(sale => sale.id === targetGoodId)
+                    const Price = goods.find(good => good.id === targetGoodId)?.price
+                    const Quantity = item.quantity
+                    const Sum = (Price || 0) * (Quantity || 0)
+                    console.log(Price)
+                    
+                    const foundGood = goods.find(good => good.id === targetGoodId)
+                    const Name = foundGood?.name
+                    const Desc = foundGood?.description
+                    
+                    if (existingSale) {
+                        existingSale.quantity += Quantity || 0
+                        existingSale.sum += Sum || 0
+                    } else {
+                        soldGoods.push({
+                            name: Name || 'Unknown',
+                            id: targetGoodId,
+                            price: Price || 0,
+                            desc: Desc || '',
+                            quantity: Quantity || 0,
+                            sum: Sum,
+                            clientName: successfulDeals.find(d => d.id === item.deal_id)?.client_name
+                        })
+                    }
                 })
-                
+
+                const total = soldGoods.reduce((sum, item) => sum + item.sum, 0)
+
                 set({
-                    allDeals: safeDeals,
+                    all_Deals: deals,
                     allSales: soldGoods,
+                    totalRevenue: total,
                     loading: false
                 })
             } catch (err: any) {
                 console.error(`Error: ${err.message}`)
-                set({ error: err.message, loading: false, allDeals: [], allSales: [] })
+                set({ error: err.message, loading: false, all_Deals: [], allSales: [], totalRevenue: 0 })
             }
         },
 
         getTotalRevenue: () => {
             const { allSales } = get()
             return allSales.reduce((sum, item) => sum + item.sum, 0)
-        },
+        }
     }
     )
 )

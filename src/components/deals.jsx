@@ -12,15 +12,10 @@ export default function Deals() {
         initDeals()
     }, [])
 
-    const safeArr = Array.isArray(allDeals)
-    ? allDeals
-    : (allDeals && typeof allDeals === 'object' && Array.isArray(allDeals.deals) ? allDeals.deals : [])
-
-    const completed = safeArr.filter(deal => deal?.dealStatus !== 'current')
-    const current = safeArr.filter(deal => deal?.dealStatus === 'current')
-    const successful = safeArr.filter(deal => deal?.dealStatus === 'successful')
-    const failed = safeArr.filter(deal => deal?.dealStatus === 'failed')
-    const lastDeal = completed[completed.length - 1]
+    const completed = allDeals.filter(deal => deal?.deal_status !== 'current')
+    const current = allDeals.filter(deal => deal?.deal_status === 'current')
+    const successful = allDeals.filter(deal => deal?.deal_status === 'successful')
+    const failed = allDeals.filter(deal => deal?.deal_status === 'failed')
     
     const dealsStats = [
         { label: "План:", val: "7" },
@@ -62,13 +57,13 @@ export default function Deals() {
                         <h2>Завершенные сделки</h2>
                         {completed && completed.length !== 0
                         ? completed.map(deal => (
-                            <div style={{fontSize:"14px"}} key={deal.dealId} className={`${borderStyles} flex flex-col pb-2 pt-1 border-b gap-2 justify-between`}>
+                            <div key={deal.id} style={{fontSize:"14px"}} className={`${borderStyles} flex flex-col pb-2 pt-1 border-b gap-2 justify-between`}>
                                 <h3 className={`${textStyles} flex flex-row justify-between`}>Заказчик: <p>{deal.clientName}</p></h3>
                                 <h3 className={`${textStyles} flex flex-row justify-between`}>Эл.почта заказчика: <p>{deal.clientEmail}</p></h3>
                                 <h3 className={`${textStyles} flex flex-row justify-between`}>Номер телефона заказчика: <p>{deal.clientPhoneNumber}</p></h3>
                                 <ul className={`${cardStyles} w-full flex flex-col`}>
                                     <p className={`${textStyles} self-start font-bold`}>Товары:</p>
-                                    {deal.clientBuys.map(good => (
+                                    {deal.client_buys.map(good => (
                                         <li key={good.id} className={`${borderStyles} pt-2 pb-2 border-b flex flex-col`}>
                                             <p>{good.name}</p>
                                             <b>Цена(шт): {good.price}</b>
@@ -90,13 +85,13 @@ export default function Deals() {
                         
                         {current && current.length !== 0
                         ? current.map(deal => (
-                            <div style={{fontSize:"14px"}} key={deal.dealId} className={`${borderStyles} flex flex-col pb-2 pt-1 border-b gap-2 justify-between`}>
+                            <div key={deal.id} style={{fontSize:"14px"}} className={`${borderStyles} flex flex-col pb-2 pt-1 border-b gap-2 justify-between`}>
                                 <h3 className={`${textStyles} flex flex-row justify-between`}>Заказчик: <p>{deal.clientName}</p></h3>
                                 <h3 className={`${textStyles} flex flex-row justify-between`}>Эл.почта заказчика: <p>{deal.clientEmail}</p></h3>
                                 <h3 className={`${textStyles} flex flex-row justify-between`}>Номер телефона заказчика: <p>{deal.clientPhoneNumber}</p></h3>
                                 <ul className={`${cardStyles} w-full flex flex-col`}>
                                     <p className={`${textStyles} self-start font-bold`}>Товары:</p>
-                                    {deal.clientBuys.map(good => (
+                                    {deal.client_buys.map(good => (
                                         <li key={good.id} className={`${borderStyles} pt-2 pb-2 border-b flex flex-col`}>
                                             <p>{good.name}</p>
                                             <b>Цена(шт): {good.price}</b>
